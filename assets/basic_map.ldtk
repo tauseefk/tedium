@@ -678,7 +678,7 @@
 			"__cHei": 16,
 			"identifier": "Dungeonfont",
 			"uid": 6,
-			"relPath": "../../roguelike/resources/dungeonfont.png",
+			"relPath": "dungeonfont.png",
 			"embedAtlas": null,
 			"pxWid": 512,
 			"pxHei": 512,
