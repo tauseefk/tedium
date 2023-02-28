@@ -96,15 +96,15 @@ dependencies = [
 [[package]]
 name = "animation_transition"
 version = "0.1.0"
-source = "git+https://github.com/tauseefk/animation_transition#5019f4cf4457d9f1a445ca843c19164d9f41498f"
+source = "git+https://github.com/tauseefk/animation_transition#e7be4cc0e13523bdc6758588c234d94318003ad0"
 dependencies = [
  "animation_transition_derive",
 ]
 
 [[package]]
 name = "animation_transition_derive"
-version = "0.1.0"
-source = "git+https://github.com/tauseefk/animation_transition#5019f4cf4457d9f1a445ca843c19164d9f41498f"
+version = "0.1.1"
+source = "git+https://github.com/tauseefk/animation_transition#e7be4cc0e13523bdc6758588c234d94318003ad0"
 dependencies = [
  "quote",
  "syn",
