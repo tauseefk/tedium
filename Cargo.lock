@@ -564,16 +564,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "bevy_pathfinding"
-version = "0.1.0"
-dependencies = [
- "animation_transition",
- "bevy",
- "bevy_ecs_ldtk",
- "pathfinding",
-]
-
-[[package]]
 name = "bevy_pbr"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2774,6 +2764,17 @@ dependencies = [
  "hash32-derive",
  "num-traits",
  "typenum",
+]
+
+[[package]]
+name = "tedium"
+version = "0.1.0"
+dependencies = [
+ "animation_transition",
+ "bevy",
+ "bevy_ecs_ldtk",
+ "bevy_ecs_tilemap",
+ "pathfinding",
 ]
 
 [[package]]

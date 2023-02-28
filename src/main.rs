@@ -62,7 +62,7 @@ fn main() {
         // .add_system(play_speed)
         .add_system(mouse_click)
         .add_system(cycle_point_of_interest)
-        .add_system(toggle_wall)
+        // .add_system(toggle_wall)
         .add_system(pathfinding)
         .add_system_set(
             SystemSet::new()

@@ -69,7 +69,7 @@ pub fn toggle_wall(
     asset_server: Res<AssetServer>,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
-    let texture_handle = asset_server.load("wall.PNG");
+    let texture_handle = asset_server.load("wall.png");
     let texture_atlas = TextureAtlas::from_grid(
         texture_handle,
         Vec2::new(GRID_BLOCK_SIZE as f32, GRID_BLOCK_SIZE as f32),
@@ -229,6 +229,9 @@ pub fn path_traversal(
     path_query: Query<&Transform, (With<Path>, Without<Player>)>,
     mut animation_state: Query<&mut PlayerAnimationState, With<Player>>,
 ) {
+    if player_query.get_single().is_err() {
+        return;
+    }
     let mut player = player_query.single_mut();
     let mut player_animation_state = animation_state.single_mut();
     match path_query.iter().nth(1) {
@@ -275,6 +278,10 @@ pub fn animate_player(
         With<Player>,
     >,
 ) {
+    if animation_state_with_texture_query.get_single().is_err() {
+        return;
+    }
+
     let (mut animation_state, mut texture_sprite) = animation_state_with_texture_query.single_mut();
 
     frame_timer.0.tick(time.delta());
