@@ -9,6 +9,7 @@ mod prelude {
     pub use animation_transition::*;
     pub use bevy::{prelude::*, time::FixedTimestep};
     pub use bevy_ecs_ldtk::prelude::*;
+    pub use bevy_ecs_ldtk::utils::sprite_sheet_bundle_from_entity_info;
     pub use pathfinding::prelude::*;
 
     pub use crate::components::*;

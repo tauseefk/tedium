@@ -108,7 +108,7 @@ pub fn cycle_point_of_interest(
     time: Res<Time>,
     mut cycle_timer: ResMut<CycleTimer>,
     mut my_events: EventReader<CyclePOIEvent>,
-    mut poi_query: Query<&mut PointOfInterest, Without<Wall>>,
+    mut poi_query: Query<&mut PointOfInterest>,
 ) {
     for _ in my_events.iter() {
         let active_idx = poi_query

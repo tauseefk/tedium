@@ -37,15 +37,17 @@ impl LdtkEntity for ChestBundle {
     fn bundle_entity(
         entity_instance: &EntityInstance,
         _: &LayerInstance,
-        _: Option<&Handle<Image>>,
-        _: Option<&TilesetDefinition>,
-        asset_server: &AssetServer,
+        tileset: Option<&Handle<Image>>,
+        tileset_definition: Option<&TilesetDefinition>,
+        _: &AssetServer,
         texture_atlases: &mut Assets<TextureAtlas>,
     ) -> ChestBundle {
-        let texture_handle = asset_server.load("chest.PNG");
-        let texture_atlas =
-            TextureAtlas::from_grid(texture_handle, Vec2::splat(GRID_BLOCK_SIZE as f32), 1, 1);
-        let texture_atlas_handle = texture_atlases.add(texture_atlas);
+        let sprite_sheet_bundle = sprite_sheet_bundle_from_entity_info(
+            entity_instance,
+            tileset,
+            tileset_definition,
+            texture_atlases,
+        );
 
         match entity_instance
             .field_instances
@@ -59,18 +61,12 @@ impl LdtkEntity for ChestBundle {
                 };
 
                 ChestBundle {
-                    sprite_sheet_bundle: SpriteSheetBundle {
-                        texture_atlas: texture_atlas_handle.clone(),
-                        ..Default::default()
-                    },
+                    sprite_sheet_bundle,
                     point_of_interest,
                 }
             }
             None => ChestBundle {
-                sprite_sheet_bundle: SpriteSheetBundle {
-                    texture_atlas: texture_atlas_handle.clone(),
-                    ..Default::default()
-                },
+                sprite_sheet_bundle,
                 point_of_interest: PointOfInterest { active: false },
             },
         }
