@@ -6,7 +6,7 @@ pub struct World {
     pub height: i32,
 }
 
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Debug)]
 pub enum TileType {
     Transparent,
     Opaque,
@@ -31,9 +31,14 @@ pub enum Pivot {
 }
 
 impl Pivot {
-    pub fn coords(&self, tile_coords: &GridCoords) -> GridCoords {
+    pub fn abs_coords(&self, tile_coords: &GridCoords) -> GridCoords {
+        let tile_coords = GridCoords {
+            x: tile_coords.x * GRID_BLOCK_SIZE,
+            y: tile_coords.y * GRID_BLOCK_SIZE,
+        };
+
         match self {
-            Pivot::Center => *tile_coords,
+            Pivot::Center => tile_coords,
             Pivot::TopRight => GridCoords {
                 x: tile_coords.x + GRID_BLOCK_SIZE / 2,
                 y: tile_coords.y + GRID_BLOCK_SIZE / 2,
@@ -107,9 +112,10 @@ impl Visibility {
     }
 
     pub fn slope(&self, tile: &GridCoords, pivot: Pivot) -> f32 {
-        let target = pivot.coords(tile);
-        return (target.y as f32 - self.observer.y as f32)
-            / (target.x as f32 - self.observer.x as f32);
+        let target = pivot.abs_coords(tile);
+        let slope =
+            (target.y as f32 - self.observer.y as f32) / (target.x as f32 - self.observer.x as f32);
+        return slope;
     }
 
     /// 4\33333|22222/1
@@ -162,7 +168,6 @@ impl Visibility {
         let end = self.point_on_scan_line(current_depth, max_slope);
 
         while current.y < end.y {
-            // println!("adding current to visible");
             self.visible_tiles.insert(current.clone());
 
             match (
@@ -182,7 +187,7 @@ impl Visibility {
                 }
                 // first transparent cell after at least one opaque
                 (false, TileType::Opaque, TileType::Transparent) => {
-                    min_slope = self.slope(&current, Pivot::TopLeft);
+                    min_slope = self.slope(&previous, Pivot::TopLeft);
                 }
                 // do nothing
                 (false, TileType::Transparent, TileType::Transparent) => {}

@@ -234,13 +234,15 @@ pub fn visibility_calc(
             '_', '_', '_', '_', '_', '_', '_', '_',
             '_', '_', '_', '_', '_', '_', '_', '_',
             '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', 'o', '_', '_', '_', '_', '_'
+            '_', 'o', 'o', 'o', '_', '_', '_', '_',
+            '_', 'o', 'o', 'o', '_', '_', '_', '_',
+            '_', 'o', 'o', 'o', '_', '_', '_', '_'
         ];
 
+    let tiles = tiles.iter().map(|value| value.into()).collect();
+
     let world = crate::field_of_view::World {
-        tiles: tiles.iter().map(|value| value.into()).collect(),
+        tiles,
         width: 8,
         height: 8,
     };
@@ -253,6 +255,7 @@ pub fn visibility_calc(
     for grid_pos in result {
         let grid_pos = GridPosition::try_new(grid_pos.x, grid_pos.y);
         if let Some(grid_pos) = grid_pos {
+            let grid_pos = grid_to_translation(grid_pos);
             commands
                 .spawn_bundle(SpriteBundle {
                     sprite: Sprite {
@@ -264,7 +267,7 @@ pub fn visibility_calc(
                         ..Default::default()
                     },
                     transform: Transform {
-                        translation: grid_to_translation(grid_pos),
+                        translation: Vec3::new(grid_pos.x, grid_pos.y, 3.),
                         ..Default::default()
                     },
                     ..Default::default()
