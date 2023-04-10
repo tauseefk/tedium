@@ -31,30 +31,31 @@ pub enum Pivot {
 }
 
 impl Pivot {
-    pub fn abs_coords(&self, tile_coords: &GridCoords) -> GridCoords {
-        let tile_coords = GridCoords {
-            x: tile_coords.x * GRID_BLOCK_SIZE,
-            y: tile_coords.y * GRID_BLOCK_SIZE,
-        };
+    pub fn abs_coords(&self, tile_coords: &GridPosition) -> Vec3 {
+        let translation = grid_to_translation(*tile_coords);
 
         match self {
-            Pivot::Center => tile_coords,
-            Pivot::TopRight => GridCoords {
-                x: tile_coords.x + GRID_BLOCK_SIZE / 2,
-                y: tile_coords.y + GRID_BLOCK_SIZE / 2,
-            },
-            Pivot::BottomRight => GridCoords {
-                x: tile_coords.x + GRID_BLOCK_SIZE / 2,
-                y: tile_coords.y - GRID_BLOCK_SIZE / 2,
-            },
-            Pivot::BottomLeft => GridCoords {
-                x: tile_coords.x - GRID_BLOCK_SIZE / 2,
-                y: tile_coords.y - GRID_BLOCK_SIZE / 2,
-            },
-            Pivot::TopLeft => GridCoords {
-                x: tile_coords.x - GRID_BLOCK_SIZE / 2,
-                y: tile_coords.y + GRID_BLOCK_SIZE / 2,
-            },
+            Pivot::Center => translation,
+            Pivot::TopRight => Vec3::new(
+                translation.x + (GRID_BLOCK_SIZE / 2) as f32,
+                translation.y + (GRID_BLOCK_SIZE / 2) as f32,
+                translation.z,
+            ),
+            Pivot::BottomRight => Vec3::new(
+                translation.x + (GRID_BLOCK_SIZE / 2) as f32,
+                translation.y - (GRID_BLOCK_SIZE / 2) as f32,
+                translation.z,
+            ),
+            Pivot::BottomLeft => Vec3::new(
+                translation.x - (GRID_BLOCK_SIZE / 2) as f32,
+                translation.y - (GRID_BLOCK_SIZE / 2) as f32,
+                translation.z,
+            ),
+            Pivot::TopLeft => Vec3::new(
+                translation.x - (GRID_BLOCK_SIZE / 2) as f32,
+                translation.y + (GRID_BLOCK_SIZE / 2) as f32,
+                translation.z,
+            ),
         }
     }
 }
@@ -62,7 +63,7 @@ impl Pivot {
 pub struct Visibility {
     is_omniscient: bool,
     max_visible_distance: i32,
-    visible_tiles: HashSet<GridCoords>,
+    visible_tiles: HashSet<GridPosition>,
     observer: GridCoords,
 }
 
@@ -79,8 +80,8 @@ impl Visibility {
     pub fn is_tile_visible(
         &self,
         world: &World,
-        observer_coords: &GridCoords,
-        tile_coords: &GridCoords,
+        observer_coords: &GridPosition,
+        tile_coords: &GridPosition,
     ) -> bool {
         // TODO: this should prob happen at the world construction
         if world.tiles.len() < 1 {
@@ -106,12 +107,12 @@ impl Visibility {
         }
     }
 
-    fn get_tile_type(&self, world: &World, tile_coords: &GridCoords) -> TileType {
+    fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> TileType {
         let idx = self.grid_coord_to_idx(world, tile_coords);
         world.tiles[idx].clone()
     }
 
-    pub fn slope(&self, tile: &GridCoords, pivot: Pivot) -> f32 {
+    pub fn slope(&self, tile: &GridPosition, pivot: Pivot) -> f32 {
         let target = pivot.abs_coords(tile);
         let slope =
             (target.y as f32 - self.observer.y as f32) / (target.x as f32 - self.observer.x as f32);
@@ -131,9 +132,9 @@ impl Visibility {
     /// 5/66666|77777\8
     /// assuming we're only concerned with the octant 1
     /// scan lines are vertical so y = mx
-    fn point_on_scan_line(&self, depth: i32, slope: f32) -> GridCoords {
+    fn point_on_scan_line(&self, depth: i32, slope: f32) -> GridPosition {
         if slope.is_infinite() {
-            GridCoords {
+            GridPosition {
                 x: self.observer.x,
                 y: (self.observer.y + depth).min(self.max_visible_distance),
             }
@@ -141,11 +142,11 @@ impl Visibility {
             let x = (self.observer.x + depth).min(self.max_visible_distance);
             let y = (x as f32 * slope).min(self.max_visible_distance as f32);
 
-            GridCoords { x, y: y as i32 }
+            GridPosition { x, y: y as i32 }
         }
     }
 
-    pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridCoords> {
+    pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
         self.compute_visible_tiles_in_octant(world, 1, 0., 1.);
         self.visible_tiles.clone()
     }
@@ -206,7 +207,7 @@ impl Visibility {
         }
     }
 
-    fn grid_coord_to_idx(&self, world: &World, tile_coords: &GridCoords) -> usize {
+    fn grid_coord_to_idx(&self, world: &World, tile_coords: &GridPosition) -> usize {
         if !self.is_in_bounds(world, tile_coords) {
             panic!("Tile not in bounds");
         }
@@ -216,7 +217,7 @@ impl Visibility {
         (tile_coords.x * w + tile_coords.y) as usize
     }
 
-    fn is_in_bounds(&self, world: &World, tile_coords: &GridCoords) -> bool {
+    fn is_in_bounds(&self, world: &World, tile_coords: &GridPosition) -> bool {
         let x = tile_coords.x;
         let y = tile_coords.y;
 

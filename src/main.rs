@@ -3,6 +3,7 @@ mod events;
 mod field_of_view;
 mod player_animation;
 mod systems;
+mod utils;
 
 mod prelude {
     pub use std::ops::Not;
@@ -19,6 +20,7 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::*;
+    pub use crate::utils::*;
 
     // TODO: use for animation frames
     pub struct FrameTimer(pub Timer);
