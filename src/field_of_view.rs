@@ -64,7 +64,7 @@ pub struct Visibility {
     is_omniscient: bool,
     max_visible_distance: i32,
     visible_tiles: HashSet<GridPosition>,
-    observer: GridCoords,
+    observer: GridPosition,
 }
 
 impl Visibility {
@@ -73,7 +73,7 @@ impl Visibility {
             is_omniscient,
             max_visible_distance,
             visible_tiles: HashSet::new(),
-            observer: GridCoords { x: 0, y: 0 },
+            observer: GridPosition { x: 0, y: 0 },
         }
     }
 
@@ -132,7 +132,7 @@ impl Visibility {
     /// 5/66666|77777\8
     /// assuming we're only concerned with the octant 1
     /// scan lines are vertical so y = mx
-    fn point_on_scan_line(&self, depth: i32, slope: f32) -> GridPosition {
+    fn grid_point_on_scan_line(&self, depth: i32, slope: f32) -> GridPosition {
         if slope.is_infinite() {
             GridPosition {
                 x: self.observer.x,
@@ -164,9 +164,9 @@ impl Visibility {
         }
 
         let mut is_first = true;
-        let mut previous = self.point_on_scan_line(current_depth, min_slope);
-        let mut current = self.point_on_scan_line(current_depth, min_slope);
-        let end = self.point_on_scan_line(current_depth, max_slope);
+        let mut previous = self.grid_point_on_scan_line(current_depth, min_slope);
+        let mut current = self.grid_point_on_scan_line(current_depth, min_slope);
+        let end = self.grid_point_on_scan_line(current_depth, max_slope);
 
         while current.y < end.y {
             self.visible_tiles.insert(current.clone());
@@ -191,8 +191,7 @@ impl Visibility {
                     min_slope = self.slope(&previous, Pivot::TopLeft);
                 }
                 // do nothing
-                (false, TileType::Transparent, TileType::Transparent) => {}
-                (false, TileType::Opaque, TileType::Opaque) => {}
+                (false, _, _) => {}
                 (true, _, _) => {
                     is_first = false;
                 }
