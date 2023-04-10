@@ -222,6 +222,58 @@ pub fn pathfinding(
     }
 }
 
+pub fn visibility_calc(
+    visibile_blocks: Query<Entity, With<Visible>>,
+    mut visibility: ResMut<crate::field_of_view::Visibility>,
+    mut commands: Commands,
+) {
+    #[rustfmt::skip]
+        let tiles = vec![
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', '_', '_', '_', '_', '_', '_',
+            '_', '_', 'o', '_', '_', '_', '_', '_'
+        ];
+
+    let world = crate::field_of_view::World {
+        tiles: tiles.iter().map(|value| value.into()).collect(),
+        width: 8,
+        height: 8,
+    };
+
+    for entity in visibile_blocks.iter() {
+        commands.entity(entity).despawn_recursive();
+    }
+
+    let result = visibility.compute_visible_tiles(&world);
+    for grid_pos in result {
+        let grid_pos = GridPosition::try_new(grid_pos.x, grid_pos.y);
+        if let Some(grid_pos) = grid_pos {
+            commands
+                .spawn_bundle(SpriteBundle {
+                    sprite: Sprite {
+                        custom_size: Some(Vec2::new(
+                            GRID_BLOCK_SIZE as f32,
+                            GRID_BLOCK_SIZE as f32,
+                        )),
+                        color: BLUE_TRANSPARENT,
+                        ..Default::default()
+                    },
+                    transform: Transform {
+                        translation: grid_to_translation(grid_pos),
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                })
+                .insert(Visible);
+        }
+    }
+}
+
 pub fn path_traversal(
     time: Res<Time>,
     mut movement_timer: ResMut<MovementTimer>,

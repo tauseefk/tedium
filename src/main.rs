@@ -1,5 +1,6 @@
 mod components;
 mod events;
+mod field_of_view;
 mod player_animation;
 mod systems;
 
@@ -7,6 +8,7 @@ mod prelude {
     pub use std::ops::Not;
 
     pub use animation_transition::*;
+    pub use bevy::utils::HashSet;
     pub use bevy::{prelude::*, time::FixedTimestep};
     pub use bevy_ecs_ldtk::prelude::*;
     pub use bevy_ecs_ldtk::utils::sprite_sheet_bundle_from_entity_info;
@@ -14,6 +16,7 @@ mod prelude {
 
     pub use crate::components::*;
     pub use crate::events::*;
+    pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::*;
 
@@ -31,6 +34,7 @@ mod prelude {
 
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
     pub const PALE: Color = Color::hsl(237.0, 0.45, 0.9);
+    pub const BLUE_TRANSPARENT: Color = Color::hsla(232.0, 0.62, 0.57, 0.5);
     pub const BLUE: Color = Color::hsl(232.0, 0.62, 0.57);
     pub const WHITE: Color = Color::hsl(0., 0., 1.);
     pub const BLACK: Color = Color::hsl(0., 0., 0.);
@@ -51,6 +55,7 @@ fn main() {
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, true)))
         .insert_resource(CycleTimer(Timer::from_seconds(8.0, true)))
         .insert_resource(MovementTimer(Timer::from_seconds(0.4, true)))
+        .insert_resource(field_of_view::Visibility::new(false, 5))
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<CyclePOIEvent>()
         .add_plugins(DefaultPlugins)
@@ -65,6 +70,7 @@ fn main() {
         .add_system(cycle_point_of_interest)
         // .add_system(toggle_wall)
         .add_system(pathfinding)
+        .add_system(visibility_calc)
         .add_system_set(
             SystemSet::new()
                 .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
