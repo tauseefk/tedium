@@ -205,24 +205,33 @@ pub fn visibility_calc(
     mut visibility: ResMut<crate::field_of_view::Visibility>,
     mut commands: Commands,
 ) {
+    // the grid is inverted on the x axis
     #[rustfmt::skip]
         let tiles = vec![
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_',
-            '_', '_', '_', '_', '_', '_', '_', '_'
+            '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+            'o', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+            'o', 'o', '_', '_', '_', '_', '_', 'o', '_', '_', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_', 'o', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', 'o', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', 'o', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_', '_',
+            'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', '_'
         ];
 
     let tiles = tiles.iter().map(|value| value.into()).collect();
 
     let world = crate::field_of_view::World {
         tiles,
-        width: 8,
-        height: 8,
+        width: 16,
+        height: 16,
     };
 
     for entity in visibile_blocks.iter() {
@@ -231,27 +240,25 @@ pub fn visibility_calc(
 
     let result = visibility.compute_visible_tiles(&world);
     for grid_pos in result {
-        let grid_pos = GridPosition::try_new(grid_pos.x, grid_pos.y);
-        if let Some(grid_pos) = grid_pos {
-            let grid_pos = grid_to_translation(grid_pos);
-            commands
-                .spawn_bundle(SpriteBundle {
-                    sprite: Sprite {
-                        custom_size: Some(Vec2::new(
-                            GRID_BLOCK_SIZE as f32,
-                            GRID_BLOCK_SIZE as f32,
-                        )),
-                        color: BLUE_TRANSPARENT,
-                        ..Default::default()
-                    },
-                    transform: Transform {
-                        translation: Vec3::new(grid_pos.x, grid_pos.y, 3.),
-                        ..Default::default()
-                    },
+        let grid_pos = GridPosition {
+            x: grid_pos.x,
+            y: grid_pos.y,
+        };
+        let grid_pos = grid_to_translation(grid_pos);
+        commands
+            .spawn_bundle(SpriteBundle {
+                sprite: Sprite {
+                    custom_size: Some(Vec2::new(8., 8.)),
+                    color: BLUE_TRANSPARENT,
                     ..Default::default()
-                })
-                .insert(Visible);
-        }
+                },
+                transform: Transform {
+                    translation: Vec3::new(grid_pos.x / 3., grid_pos.y / 3., 3.),
+                    ..Default::default()
+                },
+                ..Default::default()
+            })
+            .insert(Visible);
     }
 }
 

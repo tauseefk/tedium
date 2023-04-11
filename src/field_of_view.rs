@@ -132,17 +132,15 @@ impl Visibility {
     /// 5/66666|77777\8
     /// assuming we're only concerned with the octant 1
     /// scan lines are vertical so y = mx
+    ///
+    /// it's impossible for the the slope to be infinite as each quadrant is calculated separately
     fn grid_point_on_scan_line(&self, depth: i32, slope: f32) -> GridPosition {
-        if slope.is_infinite() {
-            GridPosition {
-                x: self.observer.x,
-                y: (self.observer.y + depth).min(self.max_visible_distance),
-            }
-        } else {
-            let x = (self.observer.x + depth).min(self.max_visible_distance);
-            let y = (x as f32 * slope).min(self.max_visible_distance as f32);
+        let x = depth;
+        let y = x as f32 * slope;
 
-            GridPosition { x, y: y as i32 }
+        GridPosition {
+            x: x + self.observer.x,
+            y: y as i32 + self.observer.y,
         }
     }
 
@@ -154,7 +152,6 @@ impl Visibility {
     fn compute_visible_tiles_in_octant(
         &mut self,
         world: &World,
-        // observer: &GridCoords, this doesn't change during each call
         current_depth: i32,
         mut min_slope: f32,
         max_slope: f32,
@@ -179,6 +176,7 @@ impl Visibility {
                 // first opaque cell after at least one transparent
                 (false, TileType::Transparent, TileType::Opaque) => {
                     let next_max_slope = self.slope(&current, Pivot::BottomRight);
+
                     self.compute_visible_tiles_in_octant(
                         world,
                         current_depth + 1,
@@ -188,7 +186,7 @@ impl Visibility {
                 }
                 // first transparent cell after at least one opaque
                 (false, TileType::Opaque, TileType::Transparent) => {
-                    min_slope = self.slope(&previous, Pivot::TopLeft);
+                    min_slope = self.slope(&current, Pivot::BottomLeft);
                 }
                 // do nothing
                 (false, _, _) => {}
@@ -199,6 +197,7 @@ impl Visibility {
             previous = current.clone();
             current.y += 1;
         }
+
         // TODO: uncomment after encountering the edge case
         // see through last group of transparent cells in a row
         if self.get_tile_type(world, &previous) == TileType::Transparent {
@@ -213,7 +212,7 @@ impl Visibility {
 
         let w = world.width;
 
-        (tile_coords.x * w + tile_coords.y) as usize
+        (tile_coords.y * w + tile_coords.x) as usize
     }
 
     fn is_in_bounds(&self, world: &World, tile_coords: &GridPosition) -> bool {

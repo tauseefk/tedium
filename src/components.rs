@@ -81,7 +81,7 @@ pub struct PointOfInterest {
     pub active: bool,
 }
 
-#[derive(Component, Eq, PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[derive(Component, Eq, PartialEq, Copy, Clone, Hash, Debug, PartialOrd, Ord, Default)]
 pub struct GridPosition {
     pub x: i32,
     pub y: i32,
