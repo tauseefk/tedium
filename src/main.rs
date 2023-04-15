@@ -57,7 +57,7 @@ fn main() {
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, true)))
         .insert_resource(CycleTimer(Timer::from_seconds(8.0, true)))
         .insert_resource(MovementTimer(Timer::from_seconds(0.4, true)))
-        .insert_resource(field_of_view::Visibility::new(false, 15))
+        .insert_resource(field_of_view::Visibility::new(false, 7))
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<CyclePOIEvent>()
         .add_plugins(DefaultPlugins)

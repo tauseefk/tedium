@@ -64,7 +64,7 @@ pub struct Visibility {
     is_omniscient: bool,
     max_visible_distance: i32,
     visible_tiles: HashSet<GridPosition>,
-    observer: GridPosition,
+    pub observer: GridPosition,
 }
 
 impl Visibility {
@@ -75,6 +75,10 @@ impl Visibility {
             visible_tiles: HashSet::new(),
             observer: GridPosition { x: 0, y: 0 },
         }
+    }
+
+    pub fn drain_visible_tiles(&mut self) {
+        self.visible_tiles.drain();
     }
 
     pub fn is_tile_visible(
@@ -96,7 +100,9 @@ impl Visibility {
             panic!("Can't see shit!");
         }
 
-        if !self.is_in_bounds(world, observer_coords) && !self.is_in_bounds(world, tile_coords) {
+        if !is_in_bounds(observer_coords, world.width, world.height)
+            && !is_in_bounds(tile_coords, world.width, world.height)
+        {
             panic!("Coordinate out of bounds!");
         }
 
@@ -108,7 +114,7 @@ impl Visibility {
     }
 
     fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> TileType {
-        let idx = self.grid_coord_to_idx(world, tile_coords);
+        let idx = grid_pos_to_idx(tile_coords, world.width, world.height);
         world.tiles[idx].clone()
     }
 
@@ -203,22 +209,5 @@ impl Visibility {
         if self.get_tile_type(world, &previous) == TileType::Transparent {
             self.compute_visible_tiles_in_octant(world, current_depth + 1, min_slope, max_slope);
         }
-    }
-
-    fn grid_coord_to_idx(&self, world: &World, tile_coords: &GridPosition) -> usize {
-        if !self.is_in_bounds(world, tile_coords) {
-            panic!("Tile not in bounds");
-        }
-
-        let w = world.width;
-
-        (tile_coords.y * w + tile_coords.x) as usize
-    }
-
-    fn is_in_bounds(&self, world: &World, tile_coords: &GridPosition) -> bool {
-        let x = tile_coords.x;
-        let y = tile_coords.y;
-
-        x >= 0 && y >= 0 && x < world.width && y < world.height
     }
 }

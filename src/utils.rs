@@ -20,3 +20,30 @@ pub fn translation_to_grid_pos(translation: Vec3) -> Option<GridPosition> {
 pub fn snap_to_grid(translation: Vec3) -> Vec3 {
     grid_to_translation(translation_to_grid_pos(translation).unwrap())
 }
+
+pub fn idx_to_grid_pos(idx: usize, world_width: i32, world_height: i32) -> GridPosition {
+    if idx > world_width as usize * world_height as usize || world_width < 1 || world_height < 1 {
+        panic!("World width, height, and idx are in consistent");
+    }
+    let y = idx as i32 / world_width;
+    let x = idx as i32 % world_width;
+
+    GridPosition { x, y }
+}
+
+pub fn grid_pos_to_idx(tile_coords: &GridPosition, world_width: i32, world_height: i32) -> usize {
+    if !is_in_bounds(tile_coords, world_width, world_height) {
+        panic!("Tile not in bounds");
+    }
+
+    let w = world_width;
+
+    (tile_coords.y * w + tile_coords.x) as usize
+}
+
+pub fn is_in_bounds(tile_coords: &GridPosition, world_width: i32, world_height: i32) -> bool {
+    let x = tile_coords.x;
+    let y = tile_coords.y;
+
+    x >= 0 && y >= 0 && x < world_width && y < world_height
+}
