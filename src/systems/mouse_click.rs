@@ -21,4 +21,3 @@ pub fn mouse_click(
         cycle_point_of_interest.send(CyclePOIEvent {});
     }
 }
-

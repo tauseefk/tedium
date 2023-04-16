@@ -2,8 +2,8 @@ use crate::prelude::*;
 /// Grid coordinates to world coordinates
 pub fn grid_to_translation(grid_pos: GridPosition) -> Vec3 {
     Vec3::new(
-        (grid_pos.x as i32 * GRID_BLOCK_SIZE - GRID_BLOCK_SIZE / 2) as f32,
-        (grid_pos.y as i32 * GRID_BLOCK_SIZE - GRID_BLOCK_SIZE / 2) as f32,
+        (grid_pos.x * GRID_BLOCK_SIZE - GRID_BLOCK_SIZE / 2) as f32,
+        (grid_pos.y * GRID_BLOCK_SIZE - GRID_BLOCK_SIZE / 2) as f32,
         2.,
     )
 }

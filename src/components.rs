@@ -89,13 +89,10 @@ pub struct GridPosition {
 
 impl GridPosition {
     pub const fn try_new(x: i32, y: i32) -> Option<Self> {
-        if x <= 0 || y <= 0 || x > GRID_SIZE as i32 || y > GRID_SIZE as i32 {
+        if x <= 0 || y <= 0 || x > GRID_SIZE || y > GRID_SIZE {
             None
         } else {
-            Some(Self {
-                x: x as i32,
-                y: y as i32,
-            })
+            Some(Self { x, y })
         }
     }
 

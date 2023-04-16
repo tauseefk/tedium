@@ -88,7 +88,7 @@ impl Visibility {
         tile_coords: &GridPosition,
     ) -> bool {
         // TODO: this should prob happen at the world construction
-        if world.tiles.len() < 1 {
+        if world.tiles.is_empty() {
             panic!("World is too small.");
         }
 
@@ -106,11 +106,7 @@ impl Visibility {
             panic!("Coordinate out of bounds!");
         }
 
-        if world.tiles.len() == 1 || *observer_coords == *tile_coords || self.is_omniscient {
-            true
-        } else {
-            false
-        }
+        world.tiles.len() == 1 || *observer_coords == *tile_coords || self.is_omniscient
     }
 
     fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> TileType {
@@ -120,9 +116,8 @@ impl Visibility {
 
     pub fn slope(&self, tile: &GridPosition, pivot: Pivot) -> f32 {
         let target = pivot.abs_coords(tile);
-        let slope =
-            (target.y as f32 - self.observer.y as f32) / (target.x as f32 - self.observer.x as f32);
-        return slope;
+
+        (target.y - self.observer.y as f32) / (target.x - self.observer.x as f32)
     }
 
     /// 4\33333|22222/1
@@ -172,7 +167,7 @@ impl Visibility {
         let end = self.grid_point_on_scan_line(current_depth, max_slope);
 
         while current.y < end.y {
-            self.visible_tiles.insert(current.clone());
+            self.visible_tiles.insert(current);
 
             match (
                 is_first,
@@ -200,7 +195,7 @@ impl Visibility {
                     is_first = false;
                 }
             };
-            previous = current.clone();
+            previous = current;
             current.y += 1;
         }
 

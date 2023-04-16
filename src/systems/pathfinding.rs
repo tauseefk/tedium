@@ -37,7 +37,7 @@ pub fn pathfinding(
             vec![(x, y - 1), (x, y + 1), (x - 1, y), (x + 1, y)]
                 .into_iter()
                 .filter_map(|(x, y)| GridPosition::try_new(x, y))
-                .filter(|grid_pos| blocks.contains(&grid_pos).not())
+                .filter(|grid_pos| blocks.contains(grid_pos).not())
         },
         |p| *p == end_grid_pos,
     );
