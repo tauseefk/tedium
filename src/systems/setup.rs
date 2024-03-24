@@ -10,7 +10,7 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ..Default::default()
     });
 
-    let ldtk_handle = asset_server.load("tedium_lvl2.ldtk");
+    let ldtk_handle = asset_server.load("basic_map.ldtk");
     commands.spawn_bundle(LdtkWorldBundle {
         ldtk_handle,
         ..Default::default()
