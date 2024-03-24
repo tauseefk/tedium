@@ -25,7 +25,6 @@ mod prelude {
     };
     pub use crate::utils::*;
 
-    // TODO: use for animation frames
     pub struct FrameTimer(pub Timer);
     pub struct CycleTimer(pub Timer);
     pub struct MovementTimer(pub Timer);
