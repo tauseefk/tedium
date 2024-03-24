@@ -6,7 +6,6 @@ mod systems;
 mod utils;
 
 mod prelude {
-    pub use std::cmp::max;
     pub use std::ops::Not;
 
     pub use animation_transition::*;

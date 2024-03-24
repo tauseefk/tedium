@@ -26,53 +26,14 @@ pub fn visibility_calc(
             .clone()
             .expect("Level asset should have layers")[2];
 
-        // the grid is inverted on the x axis
-        // #[rustfmt::skip]
-        // let debug_tiles = vec![
-        //     '_', 'o', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     '_', '_', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     '_', '_', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     '_', '_', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     '_', '_', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     '_', '_', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     '_', '_', '_', '_', '_', '_', '_', '_', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o',
-        //     'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o'
-        // ];
-
-        // let tiles = debug_tiles
-        //     .iter()
-        //     .map(|int_grid_tile_value| match int_grid_tile_value {
-        //         '_' => TileType::Transparent,
-        //         _ => TileType::Opaque,
-        //     })
-        //     .collect();
-
-        let mut stuff: Vec<char> = vec![];
         let tiles = layer_instance
             .int_grid_csv
-            // let tiles = debug_tiles
             .iter()
             .map(|int_grid_tile_value| match int_grid_tile_value {
-                2 => {
-                    stuff.push('_');
-                    TileType::Transparent
-                }
-                _ => {
-                    stuff.push('o');
-                    TileType::Opaque
-                }
+                2 => TileType::Transparent,
+                _ => TileType::Opaque,
             })
             .collect();
-
-        // println!("{stuff:?}");
 
         let world = crate::field_of_view::World {
             tiles,
