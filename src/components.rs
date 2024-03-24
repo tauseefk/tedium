@@ -18,6 +18,12 @@ pub struct Player;
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Component)]
 pub struct Wall;
 
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Component)]
+pub struct Visible;
+
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Component)]
+pub struct Hidden;
+
 #[derive(Clone, Debug, Default, Bundle, LdtkIntCell)]
 pub struct WallBundle {
     pub wall: Wall,
@@ -78,30 +84,28 @@ pub struct PointOfInterest {
     pub active: bool,
 }
 
-#[derive(Component, Eq, PartialEq, Copy, Clone, Hash, Debug, Default)]
+#[derive(Component, Eq, PartialEq, Copy, Clone, Hash, Debug, PartialOrd, Ord, Default)]
 pub struct GridPosition {
     pub x: i32,
     pub y: i32,
 }
 
 impl GridPosition {
+    // TODO: this seems wrong, it goes from 1->WORLD_SIZE however the is_in_bounds checks returns true for 0->WORLD_SIZE - 1
     pub const fn try_new(x: i32, y: i32) -> Option<Self> {
-        if x <= 0 || y <= 0 || x > GRID_SIZE as i32 || y > GRID_SIZE as i32 {
+        if x <= 0 || y <= 0 || x > GRID_CELL_COUNT || y > GRID_CELL_COUNT {
             None
         } else {
-            Some(Self {
-                x: x as i32,
-                y: y as i32,
-            })
+            Some(Self { x, y })
         }
     }
 
-    pub const fn min(self) -> bool {
+    pub const fn _min(self) -> bool {
         self.x == 1 && self.y == 1
     }
 
-    pub const fn max(self) -> bool {
-        self.x == GRID_SIZE && self.y == GRID_SIZE
+    pub const fn _max(self) -> bool {
+        self.x == GRID_CELL_COUNT && self.y == GRID_CELL_COUNT
     }
 }
 
