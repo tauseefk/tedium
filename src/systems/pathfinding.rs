@@ -93,6 +93,8 @@ pub fn path_traversal(
                 (0, -1) => PlayerAnimationVariant::WalkDown,
                 _ => player_animation_state.variant,
             };
+
+            // flip the character sprite horizontally
             if next_animation_variant == PlayerAnimationVariant::WalkRight {
                 player.scale.x = player.scale.x.abs();
             } else if next_animation_variant == PlayerAnimationVariant::WalkLeft {

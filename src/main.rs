@@ -6,6 +6,7 @@ mod systems;
 mod utils;
 
 mod prelude {
+    pub use std::cmp::max;
     pub use std::ops::Not;
 
     pub use animation_transition::*;
@@ -32,17 +33,21 @@ mod prelude {
 
     pub const TIME_STEP: f32 = 1.0 / 60.0;
 
-    pub const GRID_SIZE: i32 = 8;
-    pub const GRID_BLOCK_SIZE: i32 = 32;
+    // It's a square grid so rows == col
+    pub const GRID_CELL_COUNT: i32 = 16;
+    pub const GRID_BLOCK_SIZE: i32 = 16;
     pub const WINDOW_HEIGHT: i32 = 256;
     pub const WINDOW_WIDTH: i32 = 256;
 
+    pub const MAX_VISIBLE_DISTANCE: i32 = 8;
+
+    pub const VISIBILITY_DEBUG_SIZE: f32 = 16.;
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
-    pub const PALE: Color = Color::hsl(237.0, 0.45, 0.9);
+    pub const PALE: Color = Color::hsla(237.0, 0.45, 0.9, 0.1);
     pub const BLUE_TRANSPARENT: Color = Color::hsla(232.0, 0.62, 0.57, 0.5);
     pub const BLUE: Color = Color::hsl(232.0, 0.62, 0.57);
     pub const WHITE: Color = Color::hsl(0., 0., 1.);
-    pub const BLACK: Color = Color::hsl(0., 0., 0.);
+    pub const DARK_OVERLAY: Color = Color::hsla(0., 0., 0., 0.8);
 }
 
 use prelude::*;
@@ -51,16 +56,16 @@ fn main() {
     let mut app = App::new();
     app.insert_resource(ClearColor(Color::GRAY))
         .insert_resource(WindowDescriptor {
-            title: "Pathfinder".to_string(),
+            title: "Tedium".to_string(),
             width: (WINDOW_WIDTH) as f32,
             height: (WINDOW_HEIGHT) as f32,
             resizable: false,
             ..Default::default()
         })
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, true)))
-        .insert_resource(CycleTimer(Timer::from_seconds(8.0, true)))
-        .insert_resource(MovementTimer(Timer::from_seconds(0.4, true)))
-        .insert_resource(field_of_view::Visibility::new(false, 7))
+        .insert_resource(CycleTimer(Timer::from_seconds(800.0, true)))
+        .insert_resource(MovementTimer(Timer::from_seconds(0.2, true)))
+        .insert_resource(field_of_view::Visibility::new(false, MAX_VISIBLE_DISTANCE))
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<CyclePOIEvent>()
         .add_plugins(DefaultPlugins)
@@ -69,7 +74,7 @@ fn main() {
         .insert_resource(LevelSelection::Index(0))
         .register_ldtk_int_cell::<components::WallBundle>(1)
         .register_ldtk_entity::<components::PlayerBundle>("Player")
-        .register_ldtk_entity::<components::ChestBundle>("Chest")
+        .register_ldtk_entity::<components::ChestBundle>("Duck")
         // .add_system(play_speed)
         .add_system(mouse_click)
         .add_system(cycle_point_of_interest)

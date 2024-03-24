@@ -22,6 +22,12 @@ impl From<&char> for TileType {
     }
 }
 
+#[derive(Debug, Clone)]
+struct SlopeRange {
+    s_min: f32,
+    s_max: f32,
+}
+
 pub enum Pivot {
     Center,
     TopRight,
@@ -81,7 +87,7 @@ impl Visibility {
         self.visible_tiles.drain();
     }
 
-    pub fn is_tile_visible(
+    pub fn _is_tile_visible(
         &self,
         world: &World,
         observer_coords: &GridPosition,
@@ -134,7 +140,7 @@ impl Visibility {
     /// assuming we're only concerned with the octant 1
     /// scan lines are vertical so y = mx
     ///
-    /// it's impossible for the the slope to be infinite as each quadrant is calculated separately
+    /// it's impossible for the the slope to be infinite as each octant is calculated separately
     fn grid_point_on_scan_line(&self, depth: i32, slope: f32) -> GridPosition {
         let x = depth;
         let y = x as f32 * slope;
@@ -146,6 +152,7 @@ impl Visibility {
     }
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
+        // self.compute_visible_tiles_iterative(world);
         self.compute_visible_tiles_in_octant(world, 1, 0., 1.);
         self.visible_tiles.clone()
     }
@@ -157,7 +164,9 @@ impl Visibility {
         mut min_slope: f32,
         max_slope: f32,
     ) {
-        if current_depth > self.max_visible_distance {
+        if current_depth > self.max_visible_distance
+            || self.observer.x + current_depth >= GRID_CELL_COUNT
+        {
             return;
         }
 
@@ -166,35 +175,44 @@ impl Visibility {
         let mut current = self.grid_point_on_scan_line(current_depth, min_slope);
         let end = self.grid_point_on_scan_line(current_depth, max_slope);
 
-        while current.y < end.y {
+        if !is_in_bounds(&previous, world.width, world.height)
+            || !is_in_bounds(&current, world.width, world.height)
+            || !is_in_bounds(&end, world.width, world.height)
+        {
+            return;
+        }
+
+        while current.y < end.y && end.y < world.height {
             self.visible_tiles.insert(current);
 
-            match (
-                is_first,
-                self.get_tile_type(world, &previous),
-                self.get_tile_type(world, &current),
-            ) {
-                // first opaque cell after at least one transparent
-                (false, TileType::Transparent, TileType::Opaque) => {
-                    let next_max_slope = self.slope(&current, Pivot::BottomRight);
+            match is_first {
+                false => {
+                    match (
+                        self.get_tile_type(world, &previous),
+                        self.get_tile_type(world, &current),
+                    ) {
+                        // first opaque cell after at least one transparent
+                        (TileType::Transparent, TileType::Opaque) => {
+                            let next_max_slope = self.slope(&current, Pivot::BottomRight);
 
-                    self.compute_visible_tiles_in_octant(
-                        world,
-                        current_depth + 1,
-                        min_slope,
-                        next_max_slope,
-                    );
+                            self.compute_visible_tiles_in_octant(
+                                world,
+                                current_depth + 1,
+                                min_slope,
+                                next_max_slope,
+                            );
+                        }
+                        // first transparent cell after at least one opaque
+                        (TileType::Opaque, TileType::Transparent) => {
+                            min_slope = self.slope(&current, Pivot::BottomLeft);
+                        }
+                        (_, _) => {}
+                    }
                 }
-                // first transparent cell after at least one opaque
-                (false, TileType::Opaque, TileType::Transparent) => {
-                    min_slope = self.slope(&current, Pivot::BottomLeft);
-                }
-                // do nothing
-                (false, _, _) => {}
-                (true, _, _) => {
+                true => {
                     is_first = false;
                 }
-            };
+            }
             previous = current;
             current.y += 1;
         }
@@ -203,6 +221,56 @@ impl Visibility {
         // see through last group of transparent cells in a row
         if self.get_tile_type(world, &previous) == TileType::Transparent {
             self.compute_visible_tiles_in_octant(world, current_depth + 1, min_slope, max_slope);
+        }
+    }
+
+    pub fn _compute_visible_tiles_iterative(&mut self, world: &World) {
+        // update all visible tiles on the hash set
+
+        let slope_range = SlopeRange {
+            s_min: 0.,
+            s_max: 1.,
+        };
+        let mut slopes_next: Vec<SlopeRange> = vec![slope_range];
+        let mut depth_curr = 0;
+        let depth_max = world.width - self.observer.x;
+        while depth_curr < depth_max {
+            let mut slopes_local: Vec<SlopeRange> = vec![];
+            for slope in slopes_next.clone() {
+                let mut previous = self.grid_point_on_scan_line(depth_curr, slope.s_min);
+                let mut current = self.grid_point_on_scan_line(depth_curr, slope.s_min);
+                let end = self.grid_point_on_scan_line(depth_curr, slope.s_max);
+                let mut slope_min_local = slope.s_min;
+
+                while current.y < end.y {
+                    self.visible_tiles.insert(current);
+
+                    match (
+                        self.get_tile_type(world, &previous),
+                        self.get_tile_type(world, &current),
+                    ) {
+                        (TileType::Transparent, TileType::Opaque) => {
+                            slopes_local.push(SlopeRange {
+                                s_min: slope_min_local,
+                                s_max: self.slope(&current, Pivot::Center),
+                            });
+                        }
+                        (TileType::Opaque, TileType::Transparent) => {
+                            slope_min_local = self.slope(&current, Pivot::Center);
+                        }
+                        (_, _) => {}
+                    }
+                    previous = current;
+                    current = GridPosition {
+                        x: current.x,
+                        y: max(current.y + 1, world.height - self.observer.y),
+                    };
+                }
+            }
+            if slopes_local.len() > 0 {
+                slopes_next = slopes_local;
+            }
+            depth_curr += 1;
         }
     }
 }
