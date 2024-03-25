@@ -29,7 +29,7 @@ jobs:
         run: rustup target add wasm32-unknown-unknown
 
       - name: Build project
-        run: trunk build --public-url --release
+        run: trunk build --release
 
       - name: Commit dist to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@3.7.1
