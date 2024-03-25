@@ -146,7 +146,7 @@ impl Visibility {
         let y = x as f32 * slope;
 
         GridPosition {
-            x: x + self.observer.x,
+            x: x + self.observer.x - 1,
             y: y as i32 + self.observer.y,
         }
     }
@@ -182,7 +182,10 @@ impl Visibility {
             return;
         }
 
-        while current.y < end.y && end.y < world.height {
+        while current.y < end.y
+            && end.y < world.height
+            && self.observer.square_distance(current) < MAX_VISIBLE_DISTANCE.pow(2)
+        {
             self.visible_tiles.insert(current);
 
             match is_first {

@@ -107,6 +107,10 @@ impl GridPosition {
     pub const fn _max(self) -> bool {
         self.x == GRID_CELL_COUNT && self.y == GRID_CELL_COUNT
     }
+
+    pub const fn square_distance(self, other: GridPosition) -> i32 {
+        (other.x - self.x).pow(2) + (other.y - self.y).pow(2)
+    }
 }
 
 #[derive(Component)]
