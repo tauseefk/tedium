@@ -37,7 +37,7 @@ mod prelude {
     pub const WINDOW_HEIGHT: i32 = 256;
     pub const WINDOW_WIDTH: i32 = 256;
 
-    pub const MAX_VISIBLE_DISTANCE: i32 = 8;
+    pub const MAX_VISIBLE_DISTANCE: i32 = 6;
 
     pub const VISIBILITY_DEBUG_SIZE: f32 = 16.;
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
