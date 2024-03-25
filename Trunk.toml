@@ -1,0 +1,8 @@
+# A sem-ver version requirement of trunk required for this project
+trunk-version = "*"
+
+[build]
+# The output dir for all final assets.
+dist = "dist"
+# The public URL from which assets are to be served.
+public_url = "/"
