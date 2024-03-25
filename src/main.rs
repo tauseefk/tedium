@@ -20,8 +20,7 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, cycle_poi::*, mouse_click::*, pathfinding::*, play_speed::*, setup::*,
-        toggle_wall::*, visibility::*,
+        animate_player::*, cycle_poi::*, mouse_click::*, pathfinding::*, setup::*, visibility::*,
     };
     pub use crate::utils::*;
 
@@ -62,7 +61,7 @@ fn main() {
         })
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, true)))
         .insert_resource(CycleTimer(Timer::from_seconds(8.0, true)))
-        .insert_resource(MovementTimer(Timer::from_seconds(0.4, true)))
+        .insert_resource(MovementTimer(Timer::from_seconds(0.1, true)))
         .insert_resource(field_of_view::Visibility::new(false, MAX_VISIBLE_DISTANCE))
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<CyclePOIEvent>()
@@ -78,7 +77,7 @@ fn main() {
         .add_system(cycle_point_of_interest)
         // .add_system(toggle_wall)
         .add_system(pathfinding)
-        // .add_system(visibility_calc)
+        .add_system(visibility_calc)
         .add_system_set(
             SystemSet::new()
                 .with_run_criteria(FixedTimestep::step(TIME_STEP as f64))
