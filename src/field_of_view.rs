@@ -118,8 +118,8 @@ impl Octant {
                 let y = (x as f32 * slope) as i32;
 
                 GridPosition {
-                    x: x + observer.x - 1,
-                    y: y + observer.y,
+                    x: observer.x + x - 1,
+                    y: observer.y + y,
                 }
             }
             Self::EastOfNorth => {
@@ -127,8 +127,17 @@ impl Octant {
                 let x = (y as f32 * slope) as i32;
 
                 GridPosition {
-                    x: x + observer.x,
-                    y: y + observer.y - 1,
+                    x: observer.x + x,
+                    y: observer.y + y - 1,
+                }
+            }
+            Self::WestOfNorth => {
+                let y = depth;
+                let x = (y as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x - x,
+                    y: observer.y + y - 1,
                 }
             }
             _ => {
@@ -141,7 +150,7 @@ impl Octant {
         match self {
             Octant::NorthOfEast => pivot,
             Octant::EastOfNorth => pivot.flip_x().flip_y(),
-            Octant::WestOfNorth => todo!(),
+            Octant::WestOfNorth => pivot.flip_y(),
             Octant::NorthOfWest => todo!(),
             Octant::SouthOfWest => todo!(),
             Octant::WestOfSouth => todo!(),
@@ -182,7 +191,10 @@ impl Octant {
                 x: tile.x + 1,
                 y: tile.y,
             },
-            Octant::WestOfNorth => todo!(),
+            Octant::WestOfNorth => GridPosition {
+                x: tile.x - 1,
+                y: tile.y,
+            },
             Octant::NorthOfWest => todo!(),
             Octant::SouthOfWest => todo!(),
             Octant::WestOfSouth => todo!(),
@@ -213,18 +225,22 @@ impl Visibility {
         self.visible_tiles.drain();
     }
 
-    fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> TileType {
-        let idx = grid_pos_to_idx(tile_coords, world.width, world.height);
-        world.tiles[idx].clone()
+    fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> Option<TileType> {
+        let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
+
+        match maybe_idx {
+            Some(idx) => Some(world.tiles[idx].clone()),
+            None => None,
+        }
     }
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
+        // self.compute_visible_tiles_in_octant(world, Octant::WestOfNorth, 1, 0., 1.);
         self.visible_tiles.clone()
     }
 
-    // pub fn is_tile_in_bounds(&self, octant: Octant, tile: &GridPosition) -> bool {}
     fn compute_visible_tiles_in_octant(
         &mut self,
         world: &World,
@@ -255,7 +271,7 @@ impl Visibility {
                         self.get_tile_type(world, &current),
                     ) {
                         // first opaque cell after at least one transparent
-                        (TileType::Transparent, TileType::Opaque) => {
+                        (Some(TileType::Transparent), Some(TileType::Opaque)) => {
                             let next_max_slope =
                                 octant.slope(&self.observer, &current, Pivot::BottomRight);
 
@@ -268,7 +284,7 @@ impl Visibility {
                             );
                         }
                         // first transparent cell after at least one opaque
-                        (TileType::Opaque, TileType::Transparent) => {
+                        (Some(TileType::Opaque), Some(TileType::Transparent)) => {
                             min_slope = octant.slope(&self.observer, &current, Pivot::BottomLeft);
                         }
                         (_, _) => {}
@@ -288,7 +304,7 @@ impl Visibility {
         }
 
         // see through last group of transparent cells in a row
-        if self.get_tile_type(world, &previous) == TileType::Transparent {
+        if let Some(TileType::Transparent) = self.get_tile_type(world, &previous) {
             self.compute_visible_tiles_in_octant(
                 world,
                 octant,
