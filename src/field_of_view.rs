@@ -228,10 +228,7 @@ impl Visibility {
     fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> Option<TileType> {
         let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
 
-        match maybe_idx {
-            Some(idx) => Some(world.tiles[idx].clone()),
-            None => None,
-        }
+        maybe_idx.map(|idx| world.tiles[idx].clone())
     }
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {

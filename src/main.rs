@@ -20,7 +20,7 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, arrow_keys::*, cycle_poi::*, mouse_click::*, pathfinding::*,
+        animate_player::*, arrow_keys::*, cycle_poi::*, pathfinding::*,
         player_move::*, setup::*, visibility::*,
     };
     pub use crate::utils::*;

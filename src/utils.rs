@@ -19,10 +19,7 @@ pub fn translation_to_grid_pos(translation: Vec3) -> Option<GridPosition> {
 /// Snaps arbitrary coordinates to align with the in-game grid
 pub fn snap_to_grid(translation: Vec3) -> Option<Vec3> {
     let maybe_grid_position = translation_to_grid_pos(translation);
-    match maybe_grid_position {
-        Some(grid_position) => Some(grid_to_translation(grid_position)),
-        None => None,
-    }
+    maybe_grid_position.map(grid_to_translation)
 }
 
 pub fn idx_to_grid_pos(idx: usize, world_width: i32, world_height: i32) -> GridPosition {
