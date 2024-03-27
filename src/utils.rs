@@ -37,7 +37,7 @@ pub fn grid_pos_to_idx(
     world_height: i32,
 ) -> Option<usize> {
     if !is_in_bounds(tile_coords, world_width, world_height) {
-        println!("Tile not in bounds: {} {}", tile_coords.x, tile_coords.y);
+        // println!("Tile not in bounds: {} {}", tile_coords.x, tile_coords.y);
         return None;
     }
 

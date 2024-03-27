@@ -161,7 +161,7 @@ impl Octant {
 
     /// Returns the absolute slope for an octant
     /// Octants (1, 4, 5, 8) and (2, 3, 6, 7) should have the same absolute slope
-    pub fn slope(&self, observer: &GridPosition, tile: &GridPosition, pivot: Pivot) -> f32 {
+    pub fn slope_abs(&self, observer: &GridPosition, tile: &GridPosition, pivot: Pivot) -> f32 {
         let pivot = self.get_adjusted_pivot(pivot);
         let target = pivot.abs_coords(tile);
 
@@ -236,7 +236,7 @@ impl Visibility {
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
-        self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
+        // self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
         // self.compute_visible_tiles_in_octant(world, Octant::WestOfNorth, 1, 0., 1.);
         self.visible_tiles.clone()
     }
@@ -252,16 +252,9 @@ impl Visibility {
         let mut is_first = true;
         let mut previous = octant.grid_point_on_scan_line(self.observer, current_depth, min_slope);
         let mut current = octant.grid_point_on_scan_line(self.observer, current_depth, min_slope);
-        let end = octant.grid_point_on_scan_line(self.observer, current_depth, max_slope);
 
-        if !is_in_bounds(&previous, world.width, world.height)
-            || !is_in_bounds(&current, world.width, world.height)
-            || !is_in_bounds(&end, world.width, world.height)
-        {
-            return;
-        }
-
-        while self.observer.square_distance(current) < self.max_visible_distance.pow(2) {
+        println!("{:?}", self.observer);
+        loop {
             self.visible_tiles.insert(current);
 
             match is_first {
@@ -273,7 +266,7 @@ impl Visibility {
                         // first opaque cell after at least one transparent
                         (Some(TileType::Transparent), Some(TileType::Opaque)) => {
                             let next_max_slope =
-                                octant.slope(&self.observer, &current, Pivot::BottomRight);
+                                octant.slope_abs(&self.observer, &current, Pivot::BottomRight);
 
                             self.compute_visible_tiles_in_octant(
                                 world,
@@ -285,7 +278,8 @@ impl Visibility {
                         }
                         // first transparent cell after at least one opaque
                         (Some(TileType::Opaque), Some(TileType::Transparent)) => {
-                            min_slope = octant.slope(&self.observer, &current, Pivot::BottomLeft);
+                            min_slope =
+                                octant.slope_abs(&self.observer, &current, Pivot::BottomLeft);
                         }
                         (_, _) => {}
                     }
@@ -298,7 +292,9 @@ impl Visibility {
             current = octant.get_next_tile_on_scanline(&current);
 
             // if the slope of the current cell exceeds max_slope, we can stop calculating
-            if octant.slope(&self.observer, &current, Pivot::BottomRight) > max_slope {
+            if self.observer.square_distance(current) > self.max_visible_distance.pow(2)
+                || octant.slope_abs(&self.observer, &current, Pivot::BottomRight) > max_slope
+            {
                 break;
             }
         }
@@ -315,3 +311,7 @@ impl Visibility {
         }
     }
 }
+
+// Debugging usage example:
+// After calling compute_visible_tiles, you can use this function to print the map.
+// visibility.debug_print_visible_tiles(&world);
