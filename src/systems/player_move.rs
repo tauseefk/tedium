@@ -12,19 +12,28 @@ pub fn player_move(
     let mut player = player_query.single_mut();
 
     for event in player_move_events.iter() {
-        match event.direction {
-            PlayerMoveDirection::Up => {
-                player.translation.y = player.translation.y + 1.;
-            }
-            PlayerMoveDirection::Down => {
-                player.translation.y = player.translation.y - 1.;
-            }
-            PlayerMoveDirection::Left => {
-                player.translation.x = player.translation.x - 1.;
-            }
-            PlayerMoveDirection::Right => {
-                player.translation.x = player.translation.x + 1.;
-            }
-        }
+        let translation_delta: Vec3 = match event.direction {
+            PlayerMoveDirection::Up => Vec3 {
+                x: 0.,
+                y: GRID_BLOCK_SIZE as f32,
+                z: 0.,
+            },
+            PlayerMoveDirection::Down => Vec3 {
+                x: 0.,
+                y: -1. * GRID_BLOCK_SIZE as f32,
+                z: 0.,
+            },
+            PlayerMoveDirection::Left => Vec3 {
+                x: -1. * GRID_BLOCK_SIZE as f32,
+                y: 0.,
+                z: 0.,
+            },
+            PlayerMoveDirection::Right => Vec3 {
+                x: GRID_BLOCK_SIZE as f32,
+                y: 0.,
+                z: 0.,
+            },
+        };
+        player.translation = snap_to_grid(player.translation + translation_delta);
     }
 }

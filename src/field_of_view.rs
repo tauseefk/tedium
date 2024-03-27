@@ -236,8 +236,7 @@ impl Visibility {
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
-        // self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
-        // self.compute_visible_tiles_in_octant(world, Octant::WestOfNorth, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
         self.visible_tiles.clone()
     }
 
@@ -253,7 +252,6 @@ impl Visibility {
         let mut previous = octant.grid_point_on_scan_line(self.observer, current_depth, min_slope);
         let mut current = octant.grid_point_on_scan_line(self.observer, current_depth, min_slope);
 
-        println!("{:?}", self.observer);
         loop {
             self.visible_tiles.insert(current);
 
