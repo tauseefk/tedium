@@ -7,3 +7,14 @@ pub struct ToggleWallBlockEvent {
 
 // Event to cycle through Points of Interest
 pub struct CyclePOIEvent;
+
+pub enum PlayerMoveDirection {
+    Up,
+    Down,
+    Left,
+    Right,
+}
+
+pub struct PlayerMoveEvent {
+    pub direction: PlayerMoveDirection,
+}

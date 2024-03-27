@@ -17,8 +17,12 @@ pub fn translation_to_grid_pos(translation: Vec3) -> Option<GridPosition> {
 }
 
 /// Snaps arbitrary coordinates to align with the in-game grid
-pub fn snap_to_grid(translation: Vec3) -> Vec3 {
-    grid_to_translation(translation_to_grid_pos(translation).unwrap())
+pub fn snap_to_grid(translation: Vec3) -> Option<Vec3> {
+    let maybe_grid_position = translation_to_grid_pos(translation);
+    match maybe_grid_position {
+        Some(grid_position) => Some(grid_to_translation(grid_position)),
+        None => None,
+    }
 }
 
 pub fn idx_to_grid_pos(idx: usize, world_width: i32, world_height: i32) -> GridPosition {
@@ -31,18 +35,23 @@ pub fn idx_to_grid_pos(idx: usize, world_width: i32, world_height: i32) -> GridP
     GridPosition { x, y }
 }
 
-pub fn grid_pos_to_idx(tile_coords: &GridPosition, world_width: i32, world_height: i32) -> usize {
+pub fn grid_pos_to_idx(
+    tile_coords: &GridPosition,
+    world_width: i32,
+    world_height: i32,
+) -> Option<usize> {
     if !is_in_bounds(tile_coords, world_width, world_height) {
-        panic!("Tile not in bounds: {} {}", tile_coords.x, tile_coords.y);
+        // println!("Tile not in bounds: {} {}", tile_coords.x, tile_coords.y);
+        return None;
     }
 
     let w = world_width;
 
-    (tile_coords.y * w + tile_coords.x) as usize
+    Some((tile_coords.y * w + tile_coords.x) as usize)
 }
 
 /// Check if the tile in inside the bounds of the world
-/// returns true for 0->WORLD_SIZE
+/// returns true for [0, WORLD_SIZE)
 pub fn is_in_bounds(tile_coords: &GridPosition, world_width: i32, world_height: i32) -> bool {
     let x = tile_coords.x;
     let y = tile_coords.y;

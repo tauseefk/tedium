@@ -118,8 +118,8 @@ impl Octant {
                 let y = (x as f32 * slope) as i32;
 
                 GridPosition {
-                    x: x + observer.x - 1,
-                    y: y + observer.y,
+                    x: observer.x + x - 1,
+                    y: observer.y + y,
                 }
             }
             Self::EastOfNorth => {
@@ -127,8 +127,17 @@ impl Octant {
                 let x = (y as f32 * slope) as i32;
 
                 GridPosition {
-                    x: x + observer.x,
-                    y: y + observer.y - 1,
+                    x: observer.x + x,
+                    y: observer.y + y - 1,
+                }
+            }
+            Self::WestOfNorth => {
+                let y = depth;
+                let x = (y as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x - x,
+                    y: observer.y + y - 1,
                 }
             }
             _ => {
@@ -141,7 +150,7 @@ impl Octant {
         match self {
             Octant::NorthOfEast => pivot,
             Octant::EastOfNorth => pivot.flip_x().flip_y(),
-            Octant::WestOfNorth => todo!(),
+            Octant::WestOfNorth => pivot.flip_y(),
             Octant::NorthOfWest => todo!(),
             Octant::SouthOfWest => todo!(),
             Octant::WestOfSouth => todo!(),
@@ -152,7 +161,7 @@ impl Octant {
 
     /// Returns the absolute slope for an octant
     /// Octants (1, 4, 5, 8) and (2, 3, 6, 7) should have the same absolute slope
-    pub fn slope(&self, observer: &GridPosition, tile: &GridPosition, pivot: Pivot) -> f32 {
+    pub fn slope_abs(&self, observer: &GridPosition, tile: &GridPosition, pivot: Pivot) -> f32 {
         let pivot = self.get_adjusted_pivot(pivot);
         let target = pivot.abs_coords(tile);
 
@@ -182,7 +191,10 @@ impl Octant {
                 x: tile.x + 1,
                 y: tile.y,
             },
-            Octant::WestOfNorth => todo!(),
+            Octant::WestOfNorth => GridPosition {
+                x: tile.x - 1,
+                y: tile.y,
+            },
             Octant::NorthOfWest => todo!(),
             Octant::SouthOfWest => todo!(),
             Octant::WestOfSouth => todo!(),
@@ -213,9 +225,13 @@ impl Visibility {
         self.visible_tiles.drain();
     }
 
-    fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> TileType {
-        let idx = grid_pos_to_idx(tile_coords, world.width, world.height);
-        world.tiles[idx].clone()
+    fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> Option<TileType> {
+        let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
+
+        match maybe_idx {
+            Some(idx) => Some(world.tiles[idx].clone()),
+            None => None,
+        }
     }
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
@@ -224,7 +240,6 @@ impl Visibility {
         self.visible_tiles.clone()
     }
 
-    // pub fn is_tile_in_bounds(&self, octant: Octant, tile: &GridPosition) -> bool {}
     fn compute_visible_tiles_in_octant(
         &mut self,
         world: &World,
@@ -236,16 +251,8 @@ impl Visibility {
         let mut is_first = true;
         let mut previous = octant.grid_point_on_scan_line(self.observer, current_depth, min_slope);
         let mut current = octant.grid_point_on_scan_line(self.observer, current_depth, min_slope);
-        let end = octant.grid_point_on_scan_line(self.observer, current_depth, max_slope);
 
-        if !is_in_bounds(&previous, world.width, world.height)
-            || !is_in_bounds(&current, world.width, world.height)
-            || !is_in_bounds(&end, world.width, world.height)
-        {
-            return;
-        }
-
-        while self.observer.square_distance(current) < self.max_visible_distance.pow(2) {
+        loop {
             self.visible_tiles.insert(current);
 
             match is_first {
@@ -255,9 +262,9 @@ impl Visibility {
                         self.get_tile_type(world, &current),
                     ) {
                         // first opaque cell after at least one transparent
-                        (TileType::Transparent, TileType::Opaque) => {
+                        (Some(TileType::Transparent), Some(TileType::Opaque)) => {
                             let next_max_slope =
-                                octant.slope(&self.observer, &current, Pivot::BottomRight);
+                                octant.slope_abs(&self.observer, &current, Pivot::BottomRight);
 
                             self.compute_visible_tiles_in_octant(
                                 world,
@@ -268,8 +275,9 @@ impl Visibility {
                             );
                         }
                         // first transparent cell after at least one opaque
-                        (TileType::Opaque, TileType::Transparent) => {
-                            min_slope = octant.slope(&self.observer, &current, Pivot::BottomLeft);
+                        (Some(TileType::Opaque), Some(TileType::Transparent)) => {
+                            min_slope =
+                                octant.slope_abs(&self.observer, &current, Pivot::BottomLeft);
                         }
                         (_, _) => {}
                     }
@@ -282,13 +290,15 @@ impl Visibility {
             current = octant.get_next_tile_on_scanline(&current);
 
             // if the slope of the current cell exceeds max_slope, we can stop calculating
-            if octant.slope(&self.observer, &current, Pivot::BottomRight) > max_slope {
+            if self.observer.square_distance(current) >= self.max_visible_distance.pow(2)
+                || octant.slope_abs(&self.observer, &current, Pivot::BottomRight) >= max_slope
+            {
                 break;
             }
         }
 
         // see through last group of transparent cells in a row
-        if self.get_tile_type(world, &previous) == TileType::Transparent {
+        if let Some(TileType::Transparent) = self.get_tile_type(world, &previous) {
             self.compute_visible_tiles_in_octant(
                 world,
                 octant,

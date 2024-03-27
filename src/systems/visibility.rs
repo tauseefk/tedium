@@ -26,7 +26,8 @@ pub fn visibility_calc(
             .clone()
             .expect("Level asset should have layers")[2];
 
-        let tiles = layer_instance
+        // int_grid_csv returns y_flipped tiles for some reason
+        let tiles: Vec<TileType> = layer_instance
             .int_grid_csv
             .iter()
             .map(|int_grid_tile_value| match int_grid_tile_value {
@@ -34,9 +35,15 @@ pub fn visibility_calc(
                 _ => TileType::Opaque,
             })
             .collect();
+        let tiles_y_flipped: Vec<TileType> = tiles
+            .chunks(GRID_CELL_COUNT as usize)
+            .rev()
+            .flatten()
+            .map(|tile_type| (*tile_type).clone())
+            .collect();
 
         let world = crate::field_of_view::World {
-            tiles,
+            tiles: tiles_y_flipped,
             width: GRID_BLOCK_SIZE,
             height: GRID_BLOCK_SIZE,
         };

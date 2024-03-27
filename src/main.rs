@@ -20,7 +20,8 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, cycle_poi::*, mouse_click::*, pathfinding::*, setup::*, visibility::*,
+        animate_player::*, arrow_keys::*, cycle_poi::*, mouse_click::*, pathfinding::*,
+        player_move::*, setup::*, visibility::*,
     };
     pub use crate::utils::*;
 
@@ -36,7 +37,7 @@ mod prelude {
     pub const WINDOW_HEIGHT: i32 = 256;
     pub const WINDOW_WIDTH: i32 = 256;
 
-    pub const MAX_VISIBLE_DISTANCE: i32 = 6;
+    pub const MAX_VISIBLE_DISTANCE: i32 = 8;
 
     pub const VISIBILITY_DEBUG_SIZE: f32 = 16.;
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
@@ -64,6 +65,7 @@ fn main() {
         .insert_resource(MovementTimer(Timer::from_seconds(0.1, true)))
         .insert_resource(field_of_view::Visibility::new(false, MAX_VISIBLE_DISTANCE))
         .add_event::<ToggleWallBlockEvent>()
+        .add_event::<PlayerMoveEvent>()
         .add_event::<CyclePOIEvent>()
         .add_plugins(DefaultPlugins)
         .add_plugin(LdtkPlugin)
@@ -73,10 +75,12 @@ fn main() {
         .register_ldtk_entity::<components::PlayerBundle>("Player")
         .register_ldtk_entity::<components::ChestBundle>("Chest")
         // .add_system(play_speed)
-        .add_system(mouse_click)
+        // .add_system(mouse_click)
         .add_system(cycle_point_of_interest)
+        .add_system(arrow_keys)
+        .add_system(player_move)
         // .add_system(toggle_wall)
-        .add_system(pathfinding)
+        // .add_system(pathfinding)
         .add_system(visibility_calc)
         .add_system_set(
             SystemSet::new()
