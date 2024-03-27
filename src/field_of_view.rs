@@ -290,8 +290,8 @@ impl Visibility {
             current = octant.get_next_tile_on_scanline(&current);
 
             // if the slope of the current cell exceeds max_slope, we can stop calculating
-            if self.observer.square_distance(current) > self.max_visible_distance.pow(2)
-                || octant.slope_abs(&self.observer, &current, Pivot::BottomRight) > max_slope
+            if self.observer.square_distance(current) >= self.max_visible_distance.pow(2)
+                || octant.slope_abs(&self.observer, &current, Pivot::BottomRight) >= max_slope
             {
                 break;
             }
@@ -309,7 +309,3 @@ impl Visibility {
         }
     }
 }
-
-// Debugging usage example:
-// After calling compute_visible_tiles, you can use this function to print the map.
-// visibility.debug_print_visible_tiles(&world);

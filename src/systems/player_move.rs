@@ -34,6 +34,9 @@ pub fn player_move(
                 z: 0.,
             },
         };
-        player.translation = snap_to_grid(player.translation + translation_delta);
+        let updated_position = snap_to_grid(player.translation + translation_delta);
+        if let Some(translation) = updated_position {
+            player.translation = translation;
+        }
     }
 }

@@ -37,7 +37,7 @@ mod prelude {
     pub const WINDOW_HEIGHT: i32 = 256;
     pub const WINDOW_WIDTH: i32 = 256;
 
-    pub const MAX_VISIBLE_DISTANCE: i32 = 16;
+    pub const MAX_VISIBLE_DISTANCE: i32 = 8;
 
     pub const VISIBILITY_DEBUG_SIZE: f32 = 16.;
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
@@ -75,8 +75,8 @@ fn main() {
         .register_ldtk_entity::<components::PlayerBundle>("Player")
         .register_ldtk_entity::<components::ChestBundle>("Chest")
         // .add_system(play_speed)
-        .add_system(mouse_click)
-        // .add_system(cycle_point_of_interest)
+        // .add_system(mouse_click)
+        .add_system(cycle_point_of_interest)
         .add_system(arrow_keys)
         .add_system(player_move)
         // .add_system(toggle_wall)

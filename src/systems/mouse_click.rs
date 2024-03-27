@@ -10,9 +10,9 @@ pub fn mouse_click(
     if mouse_button_input.just_pressed(MouseButton::Left) {
         if let Some(window) = windows.get_primary() {
             if let Some(cursor_pos) = window.cursor_position() {
-                toggle_wall.send(ToggleWallBlockEvent {
-                    translation: snap_to_grid(Vec3::new(cursor_pos.x, cursor_pos.y, 1.)),
-                });
+                if let Some(translation) = snap_to_grid(Vec3::new(cursor_pos.x, cursor_pos.y, 1.)) {
+                    toggle_wall.send(ToggleWallBlockEvent { translation });
+                }
             }
         }
     }
