@@ -22,7 +22,7 @@ pub fn snap_to_grid(translation: Vec3) -> Option<Vec3> {
     maybe_grid_position.map(grid_to_translation)
 }
 
-pub fn idx_to_grid_pos(idx: usize, world_width: i32, world_height: i32) -> GridPosition {
+pub fn _idx_to_grid_pos(idx: usize, world_width: i32, world_height: i32) -> GridPosition {
     if idx > world_width as usize * world_height as usize || world_width < 1 || world_height < 1 {
         panic!("World width, height, and idx are in consistent");
     }
@@ -38,7 +38,6 @@ pub fn grid_pos_to_idx(
     world_height: i32,
 ) -> Option<usize> {
     if !is_in_bounds(tile_coords, world_width, world_height) {
-        // println!("Tile not in bounds: {} {}", tile_coords.x, tile_coords.y);
         return None;
     }
 

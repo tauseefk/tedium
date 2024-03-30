@@ -93,10 +93,10 @@ pub struct GridPosition {
 impl GridPosition {
     // TODO: this seems wrong, it goes from 1->WORLD_SIZE however the is_in_bounds checks returns true for 0->WORLD_SIZE - 1
     pub const fn try_new(x: i32, y: i32) -> Option<Self> {
-        if x <= 0 || y <= 0 || x > GRID_CELL_COUNT || y > GRID_CELL_COUNT {
-            None
-        } else {
+        if x > 0 && y > 0 && x <= GRID_CELL_COUNT && y <= GRID_CELL_COUNT {
             Some(Self { x, y })
+        } else {
+            None
         }
     }
 
