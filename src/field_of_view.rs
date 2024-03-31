@@ -244,7 +244,12 @@ impl Visibility {
         maybe_idx.map(|idx| world.tiles[idx].clone())
     }
 
+    fn add_observer(&mut self) {
+        self.visible_tiles.insert(self.observer);
+    }
+
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
+        self.add_observer();
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::WestOfNorth, 1, 0., 1.);
