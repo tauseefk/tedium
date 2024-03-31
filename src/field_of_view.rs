@@ -140,6 +140,15 @@ impl Octant {
                     y: observer.y + y - 1,
                 }
             }
+            Self::NorthOfWest => {
+                let x = depth;
+                let y = (x as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x - x + 1,
+                    y: observer.y + y,
+                }
+            }
             _ => {
                 todo!()
             }
@@ -151,7 +160,7 @@ impl Octant {
             Octant::NorthOfEast => pivot,
             Octant::EastOfNorth => pivot.flip_x().flip_y(),
             Octant::WestOfNorth => pivot.flip_y(),
-            Octant::NorthOfWest => todo!(),
+            Octant::NorthOfWest => pivot.flip_x(),
             Octant::SouthOfWest => todo!(),
             Octant::WestOfSouth => todo!(),
             Octant::EastOfSouth => todo!(),
@@ -164,6 +173,7 @@ impl Octant {
     pub fn slope_abs(&self, observer: &GridPosition, tile: &GridPosition, pivot: Pivot) -> f32 {
         let pivot = self.get_adjusted_pivot(pivot);
         let target = pivot.abs_coords(tile);
+        let observer = grid_to_translation(*observer);
 
         match self {
             Octant::NorthOfEast
@@ -195,7 +205,10 @@ impl Octant {
                 x: tile.x - 1,
                 y: tile.y,
             },
-            Octant::NorthOfWest => todo!(),
+            Octant::NorthOfWest => GridPosition {
+                x: tile.x,
+                y: tile.y + 1,
+            },
             Octant::SouthOfWest => todo!(),
             Octant::WestOfSouth => todo!(),
             Octant::EastOfSouth => todo!(),
@@ -234,6 +247,7 @@ impl Visibility {
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::NorthOfWest, 1, 0., 1.);
         self.visible_tiles.clone()
     }
 
