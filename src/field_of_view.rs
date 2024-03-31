@@ -149,8 +149,41 @@ impl Octant {
                     y: observer.y + y,
                 }
             }
-            _ => {
-                todo!()
+            Octant::SouthOfWest => {
+                let x = depth;
+                let y = (x as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x - x,
+                    y: observer.y - y,
+                }
+            }
+            Octant::WestOfSouth => {
+                let y = depth;
+                let x = (y as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x - x,
+                    y: observer.y - y,
+                }
+            }
+            Octant::EastOfSouth => {
+                let y = depth;
+                let x = (y as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x + x,
+                    y: observer.y - y,
+                }
+            }
+            Octant::SouthOfEast => {
+                let x = depth;
+                let y = (x as f32 * slope) as i32;
+
+                GridPosition {
+                    x: observer.x + x,
+                    y: observer.y - y,
+                }
             }
         }
     }
@@ -161,10 +194,10 @@ impl Octant {
             Octant::EastOfNorth => pivot.flip_x().flip_y(),
             Octant::WestOfNorth => pivot.flip_y(),
             Octant::NorthOfWest => pivot.flip_x(),
-            Octant::SouthOfWest => todo!(),
-            Octant::WestOfSouth => todo!(),
-            Octant::EastOfSouth => todo!(),
-            Octant::SouthOfEast => todo!(),
+            Octant::SouthOfWest => pivot.flip_x().flip_y(),
+            Octant::WestOfSouth => pivot,
+            Octant::EastOfSouth => pivot.flip_x(),
+            Octant::SouthOfEast => pivot.flip_y(),
         }
     }
 
@@ -193,26 +226,22 @@ impl Octant {
 
     pub fn get_next_tile_on_scanline(&self, tile: &GridPosition) -> GridPosition {
         match self {
-            Octant::NorthOfEast => GridPosition {
+            Octant::NorthOfEast | Octant::NorthOfWest => GridPosition {
                 x: tile.x,
                 y: tile.y + 1,
             },
-            Octant::EastOfNorth => GridPosition {
+            Octant::EastOfNorth | Octant::EastOfSouth => GridPosition {
                 x: tile.x + 1,
                 y: tile.y,
             },
-            Octant::WestOfNorth => GridPosition {
+            Octant::WestOfNorth | Octant::WestOfSouth => GridPosition {
                 x: tile.x - 1,
                 y: tile.y,
             },
-            Octant::NorthOfWest => GridPosition {
+            Octant::SouthOfWest | Octant::SouthOfEast => GridPosition {
                 x: tile.x,
-                y: tile.y + 1,
+                y: tile.y - 1,
             },
-            Octant::SouthOfWest => todo!(),
-            Octant::WestOfSouth => todo!(),
-            Octant::EastOfSouth => todo!(),
-            Octant::SouthOfEast => todo!(),
         }
     }
 }
@@ -254,6 +283,10 @@ impl Visibility {
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::WestOfNorth, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfWest, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::SouthOfWest, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::WestOfSouth, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::EastOfSouth, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::SouthOfEast, 1, 0., 1.);
         self.visible_tiles.clone()
     }
 
