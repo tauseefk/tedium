@@ -212,15 +212,11 @@ impl Octant {
             Octant::NorthOfEast
             | Octant::NorthOfWest
             | Octant::SouthOfWest
-            | Octant::SouthOfEast => {
-                ((target.y - observer.y as f32) / (target.x - observer.x as f32)).abs()
-            }
+            | Octant::SouthOfEast => ((target.y - observer.y) / (target.x - observer.x)).abs(),
             Octant::EastOfNorth
             | Octant::WestOfNorth
             | Octant::WestOfSouth
-            | Octant::EastOfSouth => {
-                ((target.x - observer.x as f32) / (target.y - observer.y as f32)).abs()
-            }
+            | Octant::EastOfSouth => ((target.x - observer.x) / (target.y - observer.y)).abs(),
         }
     }
 
