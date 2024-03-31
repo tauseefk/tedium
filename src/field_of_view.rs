@@ -118,7 +118,7 @@ impl Octant {
                 let y = (x as f32 * slope) as i32;
 
                 GridPosition {
-                    x: observer.x + x - 1,
+                    x: observer.x + x,
                     y: observer.y + y,
                 }
             }
@@ -128,7 +128,7 @@ impl Octant {
 
                 GridPosition {
                     x: observer.x + x,
-                    y: observer.y + y - 1,
+                    y: observer.y + y,
                 }
             }
             Self::WestOfNorth => {
@@ -137,7 +137,7 @@ impl Octant {
 
                 GridPosition {
                     x: observer.x - x,
-                    y: observer.y + y - 1,
+                    y: observer.y + y,
                 }
             }
             Self::NorthOfWest => {
@@ -145,7 +145,7 @@ impl Octant {
                 let y = (x as f32 * slope) as i32;
 
                 GridPosition {
-                    x: observer.x - x + 1,
+                    x: observer.x - x,
                     y: observer.y + y,
                 }
             }
@@ -247,6 +247,7 @@ impl Visibility {
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
+        self.compute_visible_tiles_in_octant(world, Octant::WestOfNorth, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfWest, 1, 0., 1.);
         self.visible_tiles.clone()
     }
