@@ -59,6 +59,7 @@ pub fn visibility_calc(
 
         let result = visibility.compute_visible_tiles(&world);
 
+        // GRID cells start at 1,1 and end at GRID_CELL_COUNT, GRID_CELL_COUNT
         for x in 1..=GRID_CELL_COUNT {
             for y in 1..=GRID_CELL_COUNT {
                 let grid_pos = GridPosition::try_new(x, y);
