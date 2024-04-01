@@ -1,3 +1,5 @@
+use std::fmt;
+
 pub use crate::prelude::*;
 
 pub struct World {
@@ -18,6 +20,15 @@ impl From<&char> for TileType {
             'o' => TileType::Opaque,
             '_' => TileType::Transparent,
             _ => panic!("Encountered improbable tiletype"),
+        }
+    }
+}
+
+impl fmt::Display for TileType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TileType::Opaque => write!(f, "o"),
+            TileType::Transparent => write!(f, "_"),
         }
     }
 }

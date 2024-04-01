@@ -48,7 +48,7 @@ pub fn grid_pos_to_idx(
 
 /// Check if the tile in inside the bounds of the world
 /// returns true for [0, WORLD_SIZE)
-pub fn is_in_bounds(tile_coords: &GridPosition, world_width: i32, world_height: i32) -> bool {
+fn is_in_bounds(tile_coords: &GridPosition, world_width: i32, world_height: i32) -> bool {
     let x = tile_coords.x;
     let y = tile_coords.y;
 

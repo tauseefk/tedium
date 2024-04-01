@@ -4,7 +4,6 @@ pub fn visibility_calc(
     mut commands: Commands,
     player: Query<&Transform, With<Player>>,
     visibile_blocks: Query<Entity, With<Visible>>,
-    hidden_blocks: Query<Entity, With<Hidden>>,
     mut visibility: ResMut<crate::field_of_view::Visibility>,
     levels: Res<Assets<LdtkLevel>>,
     level_query: Query<&Handle<LdtkLevel>>,
@@ -32,6 +31,7 @@ pub fn visibility_calc(
             .chunks(GRID_CELL_COUNT as usize)
             .rev()
             .collect();
+
         let tiles_y_flipped: Vec<TileType> = rows_y_flipped
             .into_iter()
             .flatten()
@@ -41,6 +41,11 @@ pub fn visibility_calc(
             })
             .collect();
 
+        // println!("=============Tiles=============");
+        // tiles_y_flipped.iter().for_each(|tile| {
+        //     print!("'{tile}', ");
+        // });
+        // println!("===============================");
         let world = crate::field_of_view::World {
             tiles: tiles_y_flipped,
             width: GRID_BLOCK_SIZE,
@@ -52,14 +57,10 @@ pub fn visibility_calc(
             commands.entity(entity).despawn_recursive();
         }
 
-        for entity in hidden_blocks.iter() {
-            commands.entity(entity).despawn_recursive();
-        }
-
         let result = visibility.compute_visible_tiles(&world);
 
-        for x in 0..=GRID_CELL_COUNT {
-            for y in 0..=GRID_CELL_COUNT {
+        for x in 1..=GRID_CELL_COUNT {
+            for y in 1..=GRID_CELL_COUNT {
                 let grid_pos = GridPosition::try_new(x, y);
                 if let Some(grid_pos) = grid_pos {
                     if !result.contains(&grid_pos) {
@@ -80,7 +81,6 @@ pub fn visibility_calc(
                             .insert(Visible);
                     }
                 }
-                {}
             }
         }
     });
