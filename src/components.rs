@@ -25,9 +25,8 @@ pub struct WallBundle {
     pub wall: Wall,
 }
 
-#[derive(Clone, Default, Bundle, LdtkEntity)]
+#[derive(Clone, Default, Bundle)]
 pub struct ChestBundle {
-    /* #[sprite_sheet_bundle] */
     pub sprite_sheet_bundle: LdtkSpriteSheetBundle,
     pub point_of_interest: PointOfInterest,
 }
@@ -35,16 +34,16 @@ pub struct ChestBundle {
 // As we're using instance field `active` to determine the first active point of interest
 // we need to implement LdtkEntity by hand.
 // TODO: Just using macros was a lot easier, I wonder if there's a way to still map fields using macros
-/* impl LdtkEntity for ChestBundle {
+impl LdtkEntity for ChestBundle {
     fn bundle_entity(
         entity_instance: &EntityInstance,
         _: &LayerInstance,
         tileset: Option<&Handle<Image>>,
         tileset_definition: Option<&TilesetDefinition>,
         _: &AssetServer,
-        texture_atlases: &mut Assets<TextureAtlas>,
+        texture_atlases: &mut Assets<TextureAtlasLayout>,
     ) -> ChestBundle {
-        let sprite_sheet_bundle = sprite_sheet_bundle_from_entity_info(
+        let sprite_sheet_bundle = bevy_ecs_ldtk::utils::sprite_sheet_bundle_from_entity_info(
             entity_instance,
             tileset,
             tileset_definition,
@@ -74,7 +73,7 @@ pub struct ChestBundle {
             },
         }
     }
-} */
+}
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Component)]
 pub struct PointOfInterest {
