@@ -69,6 +69,7 @@ fn main() {
             ..default()
         }),))
         .add_plugins(LdtkPlugin)
+        .insert_resource(LevelSelection::index(0))
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .insert_resource(CycleTimer(Timer::from_seconds(8.0, TimerMode::Repeating)))
         .insert_resource(MovementTimer(Timer::from_seconds(
@@ -79,10 +80,6 @@ fn main() {
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<PlayerMoveEvent>()
         .add_event::<CyclePOIEvent>()
-        .insert_resource(LevelSelection::Indices(LevelIndices {
-            world: Some(1),
-            level: 1,
-        }))
         .register_ldtk_int_cell::<components::WallBundle>(1)
         .register_ldtk_entity::<components::PlayerBundle>("Player")
         .register_ldtk_entity::<components::ChestBundle>("Chest")
@@ -93,7 +90,8 @@ fn main() {
                 cycle_point_of_interest,
                 arrow_keys,
                 player_move,
-                visibility_calc,
+                // visibility_calc,
+                // pathfinding,
                 bevy::window::close_when_requested,
             ),
         )
