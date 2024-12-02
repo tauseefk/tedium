@@ -59,6 +59,7 @@ pub fn visibility_calc(
             commands.entity(entity).despawn_recursive();
         }
 
+        // TODO: fix compute_visible_tiles
         let result = visibility.compute_visible_tiles(&world);
 
         // GRID cells start at 1,1 and end at GRID_CELL_COUNT, GRID_CELL_COUNT
