@@ -11,7 +11,7 @@ pub fn player_move(
 
     let mut player = player_query.single_mut();
 
-    for event in player_move_events.iter() {
+    for event in player_move_events.read() {
         let translation_delta: Vec3 = match event.direction {
             PlayerMoveDirection::Up => Vec3 {
                 x: 0.,

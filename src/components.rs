@@ -3,8 +3,7 @@ use crate::prelude::*;
 #[derive(Clone, Default, Bundle, LdtkEntity)]
 pub struct PlayerBundle {
     #[sprite_sheet_bundle]
-    #[bundle]
-    pub sprite_sheet_bundle: SpriteSheetBundle,
+    pub sprite_sheet_bundle: LdtkSpriteSheetBundle,
     pub player: Player,
     pub animation_state: PlayerAnimationState,
     // The whole EntityInstance can be stored directly as an EntityInstance component
@@ -26,17 +25,17 @@ pub struct WallBundle {
     pub wall: Wall,
 }
 
-#[derive(Clone, Default, Bundle)]
+#[derive(Clone, Default, Bundle, LdtkEntity)]
 pub struct ChestBundle {
-    #[bundle]
-    pub sprite_sheet_bundle: SpriteSheetBundle,
+    /* #[sprite_sheet_bundle] */
+    pub sprite_sheet_bundle: LdtkSpriteSheetBundle,
     pub point_of_interest: PointOfInterest,
 }
 
 // As we're using instance field `active` to determine the first active point of interest
 // we need to implement LdtkEntity by hand.
 // TODO: Just using macros was a lot easier, I wonder if there's a way to still map fields using macros
-impl LdtkEntity for ChestBundle {
+/* impl LdtkEntity for ChestBundle {
     fn bundle_entity(
         entity_instance: &EntityInstance,
         _: &LayerInstance,
@@ -50,6 +49,7 @@ impl LdtkEntity for ChestBundle {
             tileset,
             tileset_definition,
             texture_atlases,
+            false,
         );
 
         match entity_instance
@@ -74,7 +74,7 @@ impl LdtkEntity for ChestBundle {
             },
         }
     }
-}
+} */
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Component)]
 pub struct PointOfInterest {

@@ -4,7 +4,7 @@ pub fn animate_player(
     time: Res<Time>,
     mut frame_timer: ResMut<FrameTimer>,
     mut animation_state_with_texture_query: Query<
-        (&mut PlayerAnimationState, &mut TextureAtlasSprite),
+        (&mut PlayerAnimationState, &mut TextureAtlas),
         With<Player>,
     >,
 ) {

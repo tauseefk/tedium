@@ -5,8 +5,9 @@ pub fn visibility_calc(
     player: Query<&Transform, With<Player>>,
     visibile_blocks: Query<Entity, With<Visible>>,
     mut visibility: ResMut<crate::field_of_view::Visibility>,
-    levels: Res<Assets<LdtkLevel>>,
-    level_query: Query<&Handle<LdtkLevel>>,
+    level_query: Query<(Entity, &LevelIid)>,
+    ldtk_projects: Query<&Handle<LdtkProject>>,
+    ldtk_project_assets: Res<Assets<LdtkProject>>,
 ) {
     player.iter().for_each(|transform| {
         if let Some(player_grid_pos) = translation_to_grid_pos(transform.translation) {
@@ -14,16 +15,17 @@ pub fn visibility_calc(
         }
     });
 
-    level_query.for_each(|level_handle| {
-        let ldtk_level = levels
-            .get(level_handle)
-            .expect("Level should be loaded by this point");
+    level_query.iter().for_each(|(_level_handle, level_iid)| {
+        let ldtk_project = ldtk_project_assets
+            .get(ldtk_projects.single())
+            .expect("Project should be loaded if level has spawned");
 
-        let layer_instance = &ldtk_level
-            .level
-            .layer_instances
-            .clone()
-            .expect("Level asset should have layers")[2];
+        let ldtk_level = ldtk_project
+            .as_standalone()
+            .get_loaded_level_by_iid(&level_iid.to_string())
+            .expect("Spawned level should exist in LDtk project");
+
+        let layer_instance = &ldtk_level.layer_instances()[0];
 
         // int_grid_csv returns y_flipped tiles for some reason
         let rows_y_flipped: Vec<&[i32]> = layer_instance
@@ -67,7 +69,7 @@ pub fn visibility_calc(
                     if !result.contains(&grid_pos) {
                         let world_pos = grid_to_translation(grid_pos);
                         commands
-                            .spawn_bundle(SpriteBundle {
+                            .spawn(SpriteBundle {
                                 sprite: Sprite {
                                     custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
                                     color: DARK_OVERLAY,

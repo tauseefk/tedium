@@ -253,6 +253,7 @@ impl Octant {
     }
 }
 
+#[derive(Resource)]
 pub struct Visibility {
     _is_omniscient: bool,
     max_visible_distance: i32,

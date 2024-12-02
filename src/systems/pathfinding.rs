@@ -49,7 +49,7 @@ pub fn pathfinding(
     if let Some(path) = result {
         for grid_pos in path {
             commands
-                .spawn_bundle(SpriteBundle {
+                .spawn(SpriteBundle {
                     sprite: Sprite {
                         custom_size: Some(Vec2::new(4.0, 4.0)),
                         color: BLUE,
