@@ -1178,7 +1178,7 @@
 					"entityInstances": [
 						{
 							"__identifier": "Player",
-							"__grid": [8,2],
+							"__grid": [8,5],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": { "tilesetUid": 15, "x": 0, "y": 48, "w": 32, "h": 32 },
@@ -1187,10 +1187,10 @@
 							"width": 16,
 							"height": 16,
 							"defUid": 2,
-							"px": [128,32],
+							"px": [128,80],
 							"fieldInstances": [],
 							"__worldX": 128,
-							"__worldY": 32
+							"__worldY": 80
 						},
 						{
 							"__identifier": "Chest",

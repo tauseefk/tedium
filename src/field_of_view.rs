@@ -278,7 +278,12 @@ impl Visibility {
     fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> Option<TileType> {
         let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
 
-        maybe_idx.map(|idx| world.tiles[idx].clone())
+        if let Some(idx) = maybe_idx {
+            if world.tiles.len() >= idx {
+                return Some(world.tiles[idx].clone());
+            }
+        }
+        return None;
     }
 
     fn add_observer(&mut self) {
@@ -286,6 +291,10 @@ impl Visibility {
     }
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
+        if world.height < 1 || world.width < 1 {
+            return self.visible_tiles.clone();
+        }
+
         self.add_observer();
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
