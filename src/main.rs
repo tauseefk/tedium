@@ -50,6 +50,7 @@ mod prelude {
     pub const BLUE_TRANSPARENT: Color = Color::hsla(232.0, 0.62, 0.57, 0.5);
     pub const BLUE: Color = Color::hsl(232.0, 0.62, 0.57);
     pub const WHITE: Color = Color::hsl(0., 0., 1.);
+    pub const WALKABLE_INT_GRID_VALUE: i32 = 2;
     pub const DARK_OVERLAY: Color = Color::hsla(0., 0., 0., 0.9);
 }
 

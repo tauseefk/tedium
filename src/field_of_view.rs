@@ -289,10 +289,6 @@ impl Visibility {
     }
 
     pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
-        if world.height < 1 || world.width < 1 {
-            return self.visible_tiles.clone();
-        }
-
         self.add_observer();
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);

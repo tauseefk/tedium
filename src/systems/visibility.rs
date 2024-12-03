@@ -39,7 +39,26 @@ pub fn visibility_calc(
             .rev()
             .collect();
 
-        let tiles_y_flipped: Vec<TileType> = rows_y_flipped
+        // translate rows in x and y direction by 1 position
+        let mut translated_rows: Vec<Vec<i32>> = Vec::new();
+
+        let row_length = rows_y_flipped[0].len();
+        let zero_row = vec![WALKABLE_INT_GRID_VALUE; row_length];
+
+        // Insert zero_row at the beginning
+        translated_rows.push(zero_row);
+
+        for row in rows_y_flipped.iter() {
+            let mut new_row = Vec::with_capacity(row_length);
+
+            // Add zero at the beginning
+            new_row.push(WALKABLE_INT_GRID_VALUE);
+
+            new_row.extend_from_slice(row);
+            translated_rows.push(new_row[0..new_row.len() - 1].into());
+        }
+
+        let tiles_y_flipped: Vec<TileType> = translated_rows[0..translated_rows.len() - 1]
             .into_iter()
             .flatten()
             .map(|int_grid_tile_value| match int_grid_tile_value {
@@ -48,11 +67,6 @@ pub fn visibility_calc(
             })
             .collect();
 
-        // println!("=============Tiles=============");
-        // tiles_y_flipped.iter().for_each(|tile| {
-        //     print!("{tile}, ");
-        // });
-        // println!("===============================");
         let world = crate::field_of_view::World {
             tiles: tiles_y_flipped,
             width: GRID_BLOCK_SIZE,
@@ -64,7 +78,6 @@ pub fn visibility_calc(
             commands.entity(entity).despawn_recursive();
         }
 
-        // TODO: fix compute_visible_tiles
         let result = visibility.compute_visible_tiles(&world);
 
         // GRID cells start at 1,1 and end at GRID_CELL_COUNT, GRID_CELL_COUNT
