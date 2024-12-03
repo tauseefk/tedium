@@ -7,7 +7,7 @@ pub fn cycle_point_of_interest(
     mut my_events: EventReader<CyclePOIEvent>,
     mut poi_query: Query<&mut PointOfInterest>,
 ) {
-    for _ in my_events.iter() {
+    for _ in my_events.read() {
         let active_idx = poi_query
             .iter()
             .enumerate()

@@ -6,5 +6,5 @@ pub mod pathfinding;
 pub mod play_speed;
 pub mod player_move;
 pub mod setup;
-pub mod toggle_wall;
+/* pub mod toggle_wall; */
 pub mod visibility;

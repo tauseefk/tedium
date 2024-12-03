@@ -253,6 +253,7 @@ impl Octant {
     }
 }
 
+#[derive(Resource)]
 pub struct Visibility {
     _is_omniscient: bool,
     max_visible_distance: i32,
@@ -277,7 +278,10 @@ impl Visibility {
     fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> Option<TileType> {
         let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
 
-        maybe_idx.map(|idx| world.tiles[idx].clone())
+        if let Some(idx) = maybe_idx {
+            return Some(world.tiles[idx].clone());
+        }
+        return None;
     }
 
     fn add_observer(&mut self) {

@@ -3,8 +3,7 @@ use crate::prelude::*;
 #[derive(Clone, Default, Bundle, LdtkEntity)]
 pub struct PlayerBundle {
     #[sprite_sheet_bundle]
-    #[bundle]
-    pub sprite_sheet_bundle: SpriteSheetBundle,
+    pub sprite_sheet_bundle: LdtkSpriteSheetBundle,
     pub player: Player,
     pub animation_state: PlayerAnimationState,
     // The whole EntityInstance can be stored directly as an EntityInstance component
@@ -28,8 +27,7 @@ pub struct WallBundle {
 
 #[derive(Clone, Default, Bundle)]
 pub struct ChestBundle {
-    #[bundle]
-    pub sprite_sheet_bundle: SpriteSheetBundle,
+    pub sprite_sheet_bundle: LdtkSpriteSheetBundle,
     pub point_of_interest: PointOfInterest,
 }
 
@@ -43,13 +41,14 @@ impl LdtkEntity for ChestBundle {
         tileset: Option<&Handle<Image>>,
         tileset_definition: Option<&TilesetDefinition>,
         _: &AssetServer,
-        texture_atlases: &mut Assets<TextureAtlas>,
+        texture_atlases: &mut Assets<TextureAtlasLayout>,
     ) -> ChestBundle {
-        let sprite_sheet_bundle = sprite_sheet_bundle_from_entity_info(
+        let sprite_sheet_bundle = bevy_ecs_ldtk::utils::sprite_sheet_bundle_from_entity_info(
             entity_instance,
             tileset,
             tileset_definition,
             texture_atlases,
+            false,
         );
 
         match entity_instance
