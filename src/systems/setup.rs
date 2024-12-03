@@ -17,17 +17,4 @@ pub fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
         ldtk_handle,
         ..Default::default()
     });
-
-    commands.spawn(SpriteBundle {
-        sprite: Sprite {
-            color: Color::linear_rgb(0., 0., 255.0),
-            custom_size: Some(Vec2::new(64.0, 64.0)),
-            ..Default::default()
-        },
-        transform: Transform {
-            translation: Vec3::new(0., 0., 1.),
-            ..Default::default()
-        },
-        ..Default::default()
-    });
 }
