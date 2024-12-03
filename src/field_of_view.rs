@@ -279,9 +279,7 @@ impl Visibility {
         let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
 
         if let Some(idx) = maybe_idx {
-            if world.tiles.len() >= idx {
-                return Some(world.tiles[idx].clone());
-            }
+            return Some(world.tiles[idx].clone());
         }
         return None;
     }
