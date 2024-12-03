@@ -25,7 +25,12 @@ pub fn visibility_calc(
             .get_loaded_level_by_iid(&level_iid.to_string())
             .expect("Spawned level should exist in LDtk project");
 
-        let layer_instance = &ldtk_level.layer_instances()[0];
+        // Wall layer also stores info about floors
+        let layer_instance = &ldtk_level
+            .layer_instances()
+            .iter()
+            .find(|layer| layer.identifier == "Walls")
+            .expect("IntGrid layer not found");
 
         // int_grid_csv returns y_flipped tiles for some reason
         let rows_y_flipped: Vec<&[i32]> = layer_instance
@@ -45,7 +50,7 @@ pub fn visibility_calc(
 
         // println!("=============Tiles=============");
         // tiles_y_flipped.iter().for_each(|tile| {
-        //     print!("'{tile}', ");
+        //     print!("{tile}, ");
         // });
         // println!("===============================");
         let world = crate::field_of_view::World {

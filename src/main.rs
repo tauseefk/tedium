@@ -90,7 +90,7 @@ fn main() {
                 cycle_point_of_interest,
                 mouse_click,
                 visibility_calc,
-                pathfinding,
+                /* pathfinding, */
                 arrow_keys,
                 player_move,
                 bevy::window::close_when_requested,
