@@ -9,9 +9,9 @@ mod prelude {
     pub use std::ops::Not;
 
     pub use animation_transition::{AnimationLoop, AnimationTransition, AnimationTransitionMacro};
+    pub use bevy::asset::AssetMetaCheck;
     pub use bevy::prelude::*;
     pub use bevy::utils::HashSet;
-    pub use bevy::window::PrimaryWindow;
     pub use bevy_ecs_ldtk::prelude::*;
     pub use pathfinding::prelude::*;
 
@@ -20,8 +20,8 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, arrow_keys::*, cycle_poi::*, mouse_click::*, pathfinding::*,
-        player_move::*, setup::*, visibility::*,
+        animate_player::*, cycle_poi::*, mouse_click::*, pathfinding::*, player_move::*, setup::*,
+        visibility::*,
     };
     pub use crate::utils::*;
 
@@ -59,6 +59,10 @@ use prelude::*;
 fn main() {
     let mut app = App::new();
     app.add_plugins((DefaultPlugins
+        .set(AssetPlugin {
+            meta_check: AssetMetaCheck::Never,
+            ..Default::default()
+        })
         .set(ImagePlugin::default_nearest())
         .set(WindowPlugin {
             primary_window: Some(Window {
