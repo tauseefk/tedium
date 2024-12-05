@@ -78,7 +78,7 @@ fn main() {
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .insert_resource(CycleTimer(Timer::from_seconds(8.0, TimerMode::Repeating)))
         .insert_resource(MovementTimer(Timer::from_seconds(
-            0.1,
+            0.2,
             TimerMode::Repeating,
         )))
         .insert_resource(field_of_view::Visibility::new(false, MAX_VISIBLE_DISTANCE))
