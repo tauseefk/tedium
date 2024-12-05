@@ -18,7 +18,9 @@ pub struct Player;
 pub struct Wall;
 
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default, Component)]
-pub struct Visible;
+pub struct Hidden {
+    pub visibility: u8,
+}
 
 #[derive(Clone, Debug, Default, Bundle, LdtkIntCell)]
 pub struct WallBundle {

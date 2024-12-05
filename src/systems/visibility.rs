@@ -3,7 +3,7 @@ use crate::prelude::*;
 pub fn visibility_calc(
     mut commands: Commands,
     player: Query<&Transform, With<Player>>,
-    visibile_blocks: Query<Entity, With<Visible>>,
+    visibile_blocks: Query<Entity, With<Hidden>>,
     mut visibility: ResMut<crate::field_of_view::Visibility>,
     level_query: Query<(Entity, &LevelIid)>,
     ldtk_projects: Query<&Handle<LdtkProject>>,
@@ -91,16 +91,32 @@ pub fn visibility_calc(
                             .spawn(SpriteBundle {
                                 sprite: Sprite {
                                     custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
-                                    color: DARK_OVERLAY,
+                                    color: DARK_OVERLAY.with_alpha(0.9),
                                     ..Default::default()
                                 },
                                 transform: Transform {
-                                    translation: Vec3::new(world_pos.x, world_pos.y, 3.),
+                                    translation: Vec3::new(world_pos.x, world_pos.y, 4.),
                                     ..Default::default()
                                 },
                                 ..Default::default()
                             })
-                            .insert(Visible);
+                            .insert(Hidden { visibility: 0 });
+                    } else {
+                        let world_pos = grid_to_translation(grid_pos);
+                        commands
+                            .spawn(SpriteBundle {
+                                sprite: Sprite {
+                                    custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
+                                    color: DARK_OVERLAY.with_alpha(0.6),
+                                    ..Default::default()
+                                },
+                                transform: Transform {
+                                    translation: Vec3::new(world_pos.x, world_pos.y, 4.),
+                                    ..Default::default()
+                                },
+                                ..Default::default()
+                            })
+                            .insert(Hidden { visibility: 4 });
                     }
                 }
             }
