@@ -278,10 +278,11 @@ impl Visibility {
     fn get_tile_type(&self, world: &World, tile_coords: &GridPosition) -> Option<TileType> {
         let maybe_idx = grid_pos_to_idx(tile_coords, world.width, world.height);
 
-        if let Some(idx) = maybe_idx {
-            return Some(world.tiles[idx].clone());
+        match maybe_idx {
+            Some(idx) => Some(world.tiles[idx].clone()),
+            // This allows out-of-bounds to become Opaque
+            None => Some(TileType::Opaque),
         }
-        return None;
     }
 
     fn add_observer(&mut self) {
