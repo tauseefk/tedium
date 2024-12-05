@@ -40,26 +40,26 @@ pub fn visibility_calc(
             .collect();
 
         // translate rows in x and y direction by 1 position
-        let mut translated_rows: Vec<Vec<i32>> = Vec::new();
 
         let row_length = rows_y_flipped[0].len();
+        let x_translated_rows = rows_y_flipped
+            .iter()
+            .map(|row| {
+                let mut new_row = Vec::with_capacity(row_length);
+
+                // Add zero at the beginning
+                new_row.push(WALKABLE_INT_GRID_VALUE);
+
+                new_row.extend_from_slice(&row[0..row.len() - 1]);
+                new_row
+            })
+            .collect();
+
         let zero_row = vec![WALKABLE_INT_GRID_VALUE; row_length];
+        let xy_translated_rows = [vec![zero_row], x_translated_rows].concat();
 
-        // Insert zero_row at the beginning
-        translated_rows.push(zero_row);
-
-        for row in rows_y_flipped.iter() {
-            let mut new_row = Vec::with_capacity(row_length);
-
-            // Add zero at the beginning
-            new_row.push(WALKABLE_INT_GRID_VALUE);
-
-            new_row.extend_from_slice(row);
-            translated_rows.push(new_row[0..new_row.len() - 1].into());
-        }
-
-        let tiles_y_flipped: Vec<TileType> = translated_rows[0..translated_rows.len() - 1]
-            .into_iter()
+        let tiles_y_flipped: Vec<TileType> = xy_translated_rows
+            .iter()
             .flatten()
             .map(|int_grid_tile_value| match int_grid_tile_value {
                 2 => TileType::Transparent,
