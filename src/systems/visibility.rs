@@ -57,20 +57,20 @@ pub fn visibility_calc(
 
         let zero_row = vec![WALKABLE_INT_GRID_VALUE; row_length];
         let xy_translated_rows = [vec![zero_row], x_translated_rows].concat();
+        let xy_translated_rows = xy_translated_rows[0..xy_translated_rows.len() - 1].iter();
 
         let tiles_y_flipped: Vec<TileType> = xy_translated_rows
-            .iter()
             .flatten()
             .map(|int_grid_tile_value| match int_grid_tile_value {
-                2 => TileType::Transparent,
-                _ => TileType::Opaque,
+                1 => TileType::Opaque,
+                _ => TileType::Transparent,
             })
             .collect();
 
         let world = crate::field_of_view::World {
             tiles: tiles_y_flipped,
-            width: GRID_BLOCK_SIZE,
-            height: GRID_BLOCK_SIZE,
+            width: GRID_CELL_COUNT,
+            height: GRID_CELL_COUNT,
         };
 
         for entity in visibile_blocks.iter() {
@@ -91,7 +91,7 @@ pub fn visibility_calc(
                             .spawn(SpriteBundle {
                                 sprite: Sprite {
                                     custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
-                                    color: DARK_OVERLAY.with_alpha(0.9),
+                                    color: DARK_OVERLAY.with_alpha(0.4),
                                     ..Default::default()
                                 },
                                 transform: Transform {
@@ -107,7 +107,7 @@ pub fn visibility_calc(
                             .spawn(SpriteBundle {
                                 sprite: Sprite {
                                     custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
-                                    color: DARK_OVERLAY.with_alpha(0.6),
+                                    color: DARK_OVERLAY.with_alpha(0.2),
                                     ..Default::default()
                                 },
                                 transform: Transform {
