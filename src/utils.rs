@@ -1,4 +1,5 @@
 use crate::prelude::*;
+
 /// Grid coordinates to world coordinates
 pub fn grid_to_translation(grid_pos: GridPosition) -> Vec3 {
     Vec3::new(
@@ -53,4 +54,12 @@ fn is_in_bounds(tile_coords: &GridPosition, world_width: i32, world_height: i32)
     let y = tile_coords.y;
 
     x >= 0 && y >= 0 && x < world_width && y < world_height
+}
+
+#[allow(dead_code)]
+pub fn debug_tiles(tiles: &[TileType]) {
+    for tile in tiles {
+        print!("{}", tile);
+    }
+    println!("\n===========================");
 }

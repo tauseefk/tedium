@@ -25,7 +25,7 @@ pub fn pathfinding(
     let start_grid_pos = translation_to_grid_pos(player.translation).unwrap();
     let end_grid_pos = translation_to_grid_pos(c_transform.translation).unwrap();
 
-    let blocks = wall_blocks
+    let wall_blocks = wall_blocks
         .iter()
         .map(|block| translation_to_grid_pos(block.translation).unwrap())
         .collect::<Vec<_>>();
@@ -37,7 +37,7 @@ pub fn pathfinding(
             vec![(x, y - 1), (x, y + 1), (x - 1, y), (x + 1, y)]
                 .into_iter()
                 .filter_map(|(x, y)| GridPosition::try_new(x, y))
-                .filter(|grid_pos| blocks.contains(grid_pos).not())
+                .filter(|grid_pos| wall_blocks.contains(grid_pos).not())
         },
         |p| *p == end_grid_pos,
     );
@@ -78,6 +78,7 @@ pub fn path_traversal(
     }
     let mut player = player_query.single_mut();
     let mut player_animation_state = animation_state.single_mut();
+
     match path_query.iter().nth(1) {
         Some(path_block) => {
             let current_grid_position = translation_to_grid_pos(player.translation).unwrap();

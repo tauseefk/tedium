@@ -20,8 +20,8 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, cycle_poi::*, mouse_click::*, pathfinding::*, player_move::*, setup::*,
-        visibility::*,
+        animate_player::*, arrow_keys::*, cycle_poi::*, mouse_click::*, pathfinding::*,
+        player_move::*, setup::*, visibility::*,
     };
     pub use crate::utils::*;
 
@@ -37,10 +37,13 @@ mod prelude {
     pub const TIME_STEP: f32 = 1.0 / 60.0;
 
     // It's a square grid so rows == col
-    pub const GRID_CELL_COUNT: i32 = 16;
+    pub const GRID_CELL_COUNT: i32 = 32;
     pub const GRID_BLOCK_SIZE: i32 = 16;
-    pub const WINDOW_HEIGHT: i32 = 256;
-    pub const WINDOW_WIDTH: i32 = 256;
+    pub const WINDOW_HEIGHT: i32 = GRID_CELL_COUNT * GRID_BLOCK_SIZE;
+    pub const WINDOW_WIDTH: i32 = WINDOW_HEIGHT;
+
+    pub const WALLS_LAYER_IDX: i32 = 1;
+    pub const POI_CYCLE_INTERVAL: f32 = 8.0;
 
     pub const MAX_VISIBLE_DISTANCE: i32 = 8;
 
@@ -50,7 +53,6 @@ mod prelude {
     pub const BLUE_TRANSPARENT: Color = Color::hsla(232.0, 0.62, 0.57, 0.5);
     pub const BLUE: Color = Color::hsl(232.0, 0.62, 0.57);
     pub const WHITE: Color = Color::hsl(0., 0., 1.);
-    pub const WALKABLE_INT_GRID_VALUE: i32 = 2;
     pub const DARK_OVERLAY: Color = Color::hsla(0., 0., 0., 1.0);
 }
 
@@ -76,7 +78,10 @@ fn main() {
         .add_plugins(LdtkPlugin)
         .insert_resource(LevelSelection::index(0))
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
-        .insert_resource(CycleTimer(Timer::from_seconds(8.0, TimerMode::Repeating)))
+        .insert_resource(CycleTimer(Timer::from_seconds(
+            POI_CYCLE_INTERVAL,
+            TimerMode::Repeating,
+        )))
         .insert_resource(MovementTimer(Timer::from_seconds(
             0.2,
             TimerMode::Repeating,
@@ -85,7 +90,7 @@ fn main() {
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<PlayerMoveEvent>()
         .add_event::<CyclePOIEvent>()
-        .register_ldtk_int_cell::<components::WallBundle>(1)
+        .register_ldtk_int_cell::<components::WallBundle>(WALLS_LAYER_IDX)
         .register_ldtk_entity::<components::PlayerBundle>("Player")
         .register_ldtk_entity::<components::ChestBundle>("Chest")
         .add_systems(Startup, setup)
@@ -96,15 +101,13 @@ fn main() {
                 mouse_click,
                 visibility_calc,
                 pathfinding,
-                // arrow_keys,
+                arrow_keys,
+                // play_speed,
                 player_move,
                 bevy::window::close_when_requested,
             ),
         )
-        // .add_system(play_speed)
-        // .add_system(mouse_click)
-        // .add_system(toggle_wall)
-        // .add_system(pathfinding)
+        // .add_systems(FixedUpdate, animate_player);
         .add_systems(FixedUpdate, (path_traversal, animate_player));
 
     app.run();
