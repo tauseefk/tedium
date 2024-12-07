@@ -30,24 +30,6 @@ pub fn pathfinding(
         .map(|block| translation_to_grid_pos(block.translation).unwrap())
         .collect::<Vec<_>>();
 
-    // let row_length = rows_y_flipped[0].len();
-    // let x_translated_rows = rows_y_flipped
-    //     .iter()
-    //     .map(|row| {
-    //         let mut new_row = Vec::with_capacity(row_length);
-
-    //         // Add zero at the beginning
-    //         new_row.push(WALKABLE_INT_GRID_VALUE);
-
-    //         new_row.extend_from_slice(&row[0..row.len() - 1]);
-    //         new_row
-    //     })
-    //     .collect();
-
-    // let zero_row = vec![WALKABLE_INT_GRID_VALUE; row_length];
-    // let xy_translated_rows = [vec![zero_row], x_translated_rows].concat();
-    // let xy_translated_rows = xy_translated_rows[0..xy_translated_rows.len() - 1].iter();
-
     let result = bfs(
         &start_grid_pos,
         |p| {
