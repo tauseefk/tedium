@@ -25,10 +25,30 @@ pub fn pathfinding(
     let start_grid_pos = translation_to_grid_pos(player.translation).unwrap();
     let end_grid_pos = translation_to_grid_pos(c_transform.translation).unwrap();
 
-    let blocks = wall_blocks
+    println!("{}", wall_blocks.iter().len());
+
+    let wall_blocks = wall_blocks
         .iter()
         .map(|block| translation_to_grid_pos(block.translation).unwrap())
         .collect::<Vec<_>>();
+
+    // let row_length = rows_y_flipped[0].len();
+    // let x_translated_rows = rows_y_flipped
+    //     .iter()
+    //     .map(|row| {
+    //         let mut new_row = Vec::with_capacity(row_length);
+
+    //         // Add zero at the beginning
+    //         new_row.push(WALKABLE_INT_GRID_VALUE);
+
+    //         new_row.extend_from_slice(&row[0..row.len() - 1]);
+    //         new_row
+    //     })
+    //     .collect();
+
+    // let zero_row = vec![WALKABLE_INT_GRID_VALUE; row_length];
+    // let xy_translated_rows = [vec![zero_row], x_translated_rows].concat();
+    // let xy_translated_rows = xy_translated_rows[0..xy_translated_rows.len() - 1].iter();
 
     let result = bfs(
         &start_grid_pos,
@@ -37,7 +57,7 @@ pub fn pathfinding(
             vec![(x, y - 1), (x, y + 1), (x - 1, y), (x + 1, y)]
                 .into_iter()
                 .filter_map(|(x, y)| GridPosition::try_new(x, y))
-                .filter(|grid_pos| blocks.contains(grid_pos).not())
+                .filter(|grid_pos| wall_blocks.contains(grid_pos).not())
         },
         |p| *p == end_grid_pos,
     );
@@ -78,6 +98,7 @@ pub fn path_traversal(
     }
     let mut player = player_query.single_mut();
     let mut player_animation_state = animation_state.single_mut();
+
     match path_query.iter().nth(1) {
         Some(path_block) => {
             let current_grid_position = translation_to_grid_pos(player.translation).unwrap();

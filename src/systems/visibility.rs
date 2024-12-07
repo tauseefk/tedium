@@ -59,7 +59,7 @@ pub fn visibility_calc(
         let xy_translated_rows = [vec![zero_row], x_translated_rows].concat();
         let xy_translated_rows = xy_translated_rows[0..xy_translated_rows.len() - 1].iter();
 
-        let tiles_y_flipped: Vec<TileType> = xy_translated_rows
+        let tiles: Vec<TileType> = xy_translated_rows
             .flatten()
             .map(|int_grid_tile_value| match int_grid_tile_value {
                 1 => TileType::Opaque,
@@ -67,8 +67,10 @@ pub fn visibility_calc(
             })
             .collect();
 
+        // debug_tiles(&tiles);
+
         let world = crate::field_of_view::World {
-            tiles: tiles_y_flipped,
+            tiles,
             width: GRID_CELL_COUNT,
             height: GRID_CELL_COUNT,
         };
