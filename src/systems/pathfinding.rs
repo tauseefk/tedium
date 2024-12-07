@@ -25,8 +25,6 @@ pub fn pathfinding(
     let start_grid_pos = translation_to_grid_pos(player.translation).unwrap();
     let end_grid_pos = translation_to_grid_pos(c_transform.translation).unwrap();
 
-    println!("{}", wall_blocks.iter().len());
-
     let wall_blocks = wall_blocks
         .iter()
         .map(|block| translation_to_grid_pos(block.translation).unwrap())

@@ -43,7 +43,7 @@ mod prelude {
     pub const WINDOW_WIDTH: i32 = WINDOW_HEIGHT;
 
     pub const WALKABLE_INT_GRID_VALUE: i32 = 1;
-    pub const WALLS_LAYER_IDX: i32 = 2;
+    pub const WALLS_LAYER_IDX: i32 = 1;
     pub const POI_CYCLE_INTERVAL: f32 = 80.0;
 
     pub const MAX_VISIBLE_DISTANCE: i32 = 8;
