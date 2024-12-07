@@ -42,9 +42,8 @@ mod prelude {
     pub const WINDOW_HEIGHT: i32 = GRID_CELL_COUNT * GRID_BLOCK_SIZE;
     pub const WINDOW_WIDTH: i32 = WINDOW_HEIGHT;
 
-    pub const WALKABLE_INT_GRID_VALUE: i32 = 1;
     pub const WALLS_LAYER_IDX: i32 = 1;
-    pub const POI_CYCLE_INTERVAL: f32 = 80.0;
+    pub const POI_CYCLE_INTERVAL: f32 = 8.0;
 
     pub const MAX_VISIBLE_DISTANCE: i32 = 8;
 
@@ -108,12 +107,8 @@ fn main() {
                 bevy::window::close_when_requested,
             ),
         )
-        .add_systems(
-            FixedUpdate,
-            // (
-            // path_traversal,
-            animate_player, // ),
-        );
+        // .add_systems(FixedUpdate, animate_player);
+        .add_systems(FixedUpdate, (path_traversal, animate_player));
 
     app.run();
 }
