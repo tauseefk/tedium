@@ -1,4 +1,5 @@
 mod components;
+mod debug;
 mod events;
 mod field_of_view;
 mod player_animation;
@@ -16,11 +17,12 @@ mod prelude {
     pub use pathfinding::prelude::*;
 
     pub use crate::components::*;
+    pub use crate::debug::*;
     pub use crate::events::*;
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, arrow_keys::*, camera_follow::*, cycle_poi::*, mouse_click::*,
+        animate_player::*, camera_follow::*, cycle_poi::*, keyboard_events::*, mouse_click::*,
         pathfinding::*, player_move::*, spawn_camera::*, spawn_map::*, visibility::*,
     };
     pub use crate::utils::*;
@@ -51,7 +53,7 @@ mod prelude {
 
     pub const MAX_VISIBLE_DISTANCE: i32 = 8;
     pub const LIGHT_INTENSITY: i32 = 8;
-    pub const LIGHT_HEIGHT: i32 = 8;
+    pub const LIGHT_HEIGHT: i32 = 2;
 
     pub const VISIBILITY_DEBUG_SIZE: f32 = 16.;
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
@@ -60,7 +62,7 @@ mod prelude {
     pub const BLUE: Color = Color::hsl(232.0, 0.62, 0.57);
     pub const WHITE: Color = Color::hsl(0., 0., 1.);
     pub const DARK_OVERLAY: Color = Color::hsla(0., 0., 0., 1.0);
-    pub const CLEAR_COLOR: Color = Color::hsl(322., 0.27, 0.06);
+    pub const CLEAR_COLOR: Color = Color::hsl(1., 0., 0.);
 }
 
 use prelude::*;
@@ -83,6 +85,18 @@ fn main() {
             ..default()
         }),))
         .add_plugins(LdtkPlugin)
+        .insert_resource(DebugConfig {
+            light_height: DebugConfigValue {
+                min: 1,
+                max: 20,
+                value: LIGHT_HEIGHT,
+            },
+            light_intensity: DebugConfigValue {
+                min: 0,
+                max: 9,
+                value: LIGHT_INTENSITY,
+            },
+        })
         .insert_resource(ClearColor(CLEAR_COLOR))
         .insert_resource(LevelSelection::index(0))
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
@@ -95,6 +109,7 @@ fn main() {
             TimerMode::Repeating,
         )))
         .insert_resource(field_of_view::Visibility::new(false, MAX_VISIBLE_DISTANCE))
+        .add_event::<UpdateDebugConfigEvent>()
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<PlayerMoveEvent>()
         .add_event::<CyclePOIEvent>()
@@ -109,11 +124,12 @@ fn main() {
                 mouse_click,
                 visibility_calculation_system,
                 pathfinding,
-                // arrow_keys,
+                keyboard_events_system,
                 // play_speed,
                 player_move,
                 camera_follow_system,
                 camera_transform_system,
+                update_debug_config_system,
                 bevy::window::close_when_requested,
             ),
         )

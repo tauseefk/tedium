@@ -6,6 +6,7 @@ pub fn visibility_calculation_system(
     visibile_blocks: Query<Entity, With<Hidden>>,
     wall_blocks: Query<&Transform, With<Wall>>,
     mut visibility: ResMut<crate::field_of_view::Visibility>,
+    debug_config: Res<DebugConfig>,
 ) {
     player.iter().for_each(|transform| {
         if let Some(player_grid_pos) = translation_to_grid_pos(transform.translation) {
@@ -65,7 +66,8 @@ pub fn visibility_calculation_system(
                             sprite: Sprite {
                                 custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
                                 color: DARK_OVERLAY.with_alpha(
-                                    (1 - (LIGHT_INTENSITY / (LIGHT_HEIGHT + MAX_VISIBLE_DISTANCE)))
+                                    (1 - (debug_config.light_intensity.value
+                                        / (debug_config.light_height.value + MAX_VISIBLE_DISTANCE)))
                                         as f32,
                                 ),
                                 ..Default::default()
@@ -85,8 +87,8 @@ pub fn visibility_calculation_system(
                             sprite: Sprite {
                                 custom_size: Some(Vec2::splat(VISIBILITY_DEBUG_SIZE)),
                                 color: DARK_OVERLAY.with_alpha(
-                                    (1. - (LIGHT_INTENSITY as f32
-                                        / (LIGHT_HEIGHT + tile_dist) as f32))
+                                    (1. - (debug_config.light_intensity.value as f32
+                                        / (debug_config.light_height.value + tile_dist) as f32))
                                         as f32,
                                 ),
                                 ..Default::default()
