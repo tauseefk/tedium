@@ -20,8 +20,8 @@ mod prelude {
     pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
-        animate_player::*, arrow_keys::*, cycle_poi::*, mouse_click::*, pathfinding::*,
-        player_move::*, setup::*, visibility::*,
+        animate_player::*, arrow_keys::*, camera_follow::*, cycle_poi::*, mouse_click::*,
+        pathfinding::*, player_move::*, spawn_camera::*, spawn_map::*, visibility::*,
     };
     pub use crate::utils::*;
 
@@ -40,7 +40,11 @@ mod prelude {
     pub const GRID_CELL_COUNT: i32 = 32;
     pub const GRID_BLOCK_SIZE: i32 = 16;
     pub const WINDOW_HEIGHT: i32 = GRID_CELL_COUNT * GRID_BLOCK_SIZE;
-    pub const WINDOW_WIDTH: i32 = WINDOW_HEIGHT;
+    pub const WINDOW_WIDTH: i32 = WINDOW_HEIGHT + WINDOW_HEIGHT / 2;
+
+    pub const CAMERA_BB_HEIGHT: f32 = (WINDOW_HEIGHT / 8) as f32;
+    pub const CAMERA_BB_WIDTH: f32 = (WINDOW_WIDTH / 8) as f32;
+    pub const CAMERA_FOLLOW_SPEED: f32 = 0.05;
 
     pub const WALLS_LAYER_IDX: i32 = 1;
     pub const POI_CYCLE_INTERVAL: f32 = 8.0;
@@ -54,6 +58,7 @@ mod prelude {
     pub const BLUE: Color = Color::hsl(232.0, 0.62, 0.57);
     pub const WHITE: Color = Color::hsl(0., 0., 1.);
     pub const DARK_OVERLAY: Color = Color::hsla(0., 0., 0., 1.0);
+    pub const CLEAR_COLOR: Color = Color::hsl(322., 0.27, 0.06);
 }
 
 use prelude::*;
@@ -76,6 +81,7 @@ fn main() {
             ..default()
         }),))
         .add_plugins(LdtkPlugin)
+        .insert_resource(ClearColor(CLEAR_COLOR))
         .insert_resource(LevelSelection::index(0))
         .insert_resource(FrameTimer(Timer::from_seconds(0.1, TimerMode::Repeating)))
         .insert_resource(CycleTimer(Timer::from_seconds(
@@ -93,7 +99,7 @@ fn main() {
         .register_ldtk_int_cell::<components::WallBundle>(WALLS_LAYER_IDX)
         .register_ldtk_entity::<components::PlayerBundle>("Player")
         .register_ldtk_entity::<components::ChestBundle>("Chest")
-        .add_systems(Startup, setup)
+        .add_systems(Startup, (spawn_map_system, spawn_camera_system))
         .add_systems(
             Update,
             (
@@ -101,9 +107,11 @@ fn main() {
                 mouse_click,
                 visibility_calc,
                 pathfinding,
-                arrow_keys,
+                // arrow_keys,
                 // play_speed,
                 player_move,
+                camera_follow_system,
+                camera_transform_system,
                 bevy::window::close_when_requested,
             ),
         )

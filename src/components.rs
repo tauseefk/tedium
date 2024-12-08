@@ -118,3 +118,8 @@ pub struct Path;
 pub struct PlaySpeed {
     pub multiplier: f32,
 }
+
+#[derive(Component)]
+pub struct IntermediateCamera {
+    pub transform: Transform,
+}
