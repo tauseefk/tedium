@@ -11,7 +11,7 @@ mod prelude {
     pub use animation_transition::{AnimationLoop, AnimationTransition, AnimationTransitionMacro};
     pub use bevy::asset::AssetMetaCheck;
     pub use bevy::prelude::*;
-    pub use bevy::utils::HashSet;
+    pub use bevy::utils::{HashMap, HashSet};
     pub use bevy_ecs_ldtk::prelude::*;
     pub use pathfinding::prelude::*;
 
@@ -50,6 +50,8 @@ mod prelude {
     pub const POI_CYCLE_INTERVAL: f32 = 8.0;
 
     pub const MAX_VISIBLE_DISTANCE: i32 = 8;
+    pub const LIGHT_INTENSITY: i32 = 8;
+    pub const LIGHT_HEIGHT: i32 = 8;
 
     pub const VISIBILITY_DEBUG_SIZE: f32 = 16.;
     pub const YELLOW: Color = Color::hsl(53.0, 0.99, 0.50);
@@ -105,7 +107,7 @@ fn main() {
             (
                 cycle_point_of_interest,
                 mouse_click,
-                visibility_calc,
+                visibility_calculation_system,
                 pathfinding,
                 // arrow_keys,
                 // play_speed,

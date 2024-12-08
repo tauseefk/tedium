@@ -257,7 +257,7 @@ impl Octant {
 pub struct Visibility {
     _is_omniscient: bool,
     max_visible_distance: i32,
-    visible_tiles: HashSet<GridPosition>,
+    visible_tiles: HashMap<GridPosition, i32>,
     pub observer: GridPosition,
 }
 
@@ -266,7 +266,7 @@ impl Visibility {
         Self {
             _is_omniscient: is_omniscient,
             max_visible_distance,
-            visible_tiles: HashSet::new(),
+            visible_tiles: HashMap::new(),
             observer: GridPosition { x: 0, y: 0 },
         }
     }
@@ -286,10 +286,10 @@ impl Visibility {
     }
 
     fn add_observer(&mut self) {
-        self.visible_tiles.insert(self.observer);
+        self.visible_tiles.insert(self.observer, 0);
     }
 
-    pub fn compute_visible_tiles(&mut self, world: &World) -> HashSet<GridPosition> {
+    pub fn compute_visible_tiles(&mut self, world: &World) -> HashMap<GridPosition, i32> {
         self.add_observer();
         self.compute_visible_tiles_in_octant(world, Octant::NorthOfEast, 1, 0., 1.);
         self.compute_visible_tiles_in_octant(world, Octant::EastOfNorth, 1, 0., 1.);
@@ -322,7 +322,8 @@ impl Visibility {
                 break;
             }
 
-            self.visible_tiles.insert(current);
+            self.visible_tiles
+                .insert(current, self.observer.square_distance(current));
 
             match is_first {
                 false => {

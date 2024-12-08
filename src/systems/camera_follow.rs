@@ -1,9 +1,5 @@
 use crate::prelude::*;
 
-fn asymptotic_avg(current: f32, target: f32, speed: f32) -> f32 {
-    current + (target - current) * speed
-}
-
 pub fn camera_follow_system(
     player_query: Query<&Transform, (With<Player>, Without<Camera>)>,
     mut intermediate_camera_query: Query<&mut IntermediateCamera>,

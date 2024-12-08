@@ -63,3 +63,7 @@ pub fn debug_tiles(tiles: &[TileType]) {
     }
     println!("\n===========================");
 }
+
+pub fn asymptotic_avg(current: f32, target: f32, progress: f32) -> f32 {
+    current + (target - current) * progress
+}
