@@ -1,6 +1,6 @@
 pub mod animate_player;
-pub mod arrow_keys;
 pub mod cycle_poi;
+pub mod keyboard_events;
 pub mod mouse_click;
 pub mod pathfinding;
 pub mod play_speed;
