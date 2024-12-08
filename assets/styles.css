@@ -6,6 +6,7 @@ canvas {
   background-color: white;
   width: 512px !important;
   height: 512px !important;
+  outline: none;
 }
 
 .dark {
