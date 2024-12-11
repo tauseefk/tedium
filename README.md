@@ -1,8 +1,8 @@
 ## Tedium
 
-Run around the house, and maybe get a few things done.
+Run around, and maybe get a few things done.
 
-For older histories visit the archive: [Bevy Pathfinding](https://github.com/tauseefk/bevy-pathfinding)
+<img src="https://github.com/tauseefk/tedium/blob/main/assets/tedium.gif" width="400" />
 
 ### Current experiments
 
