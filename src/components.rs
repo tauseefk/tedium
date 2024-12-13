@@ -82,34 +82,34 @@ pub struct PointOfInterest {
     pub active: bool,
 }
 
-#[derive(Component, Eq, PartialEq, Copy, Clone, Hash, Debug, PartialOrd, Ord, Default)]
-pub struct GridPosition {
-    pub x: i32,
-    pub y: i32,
-}
+// #[derive(Component, Eq, PartialEq, Copy, Clone, Hash, Debug, PartialOrd, Ord, Default)]
+// pub struct GridPosition {
+//     pub x: i32,
+//     pub y: i32,
+// }
 
-impl GridPosition {
-    // TODO: this seems wrong, it goes from 1->WORLD_SIZE however the is_in_bounds checks returns true for 0->WORLD_SIZE - 1
-    pub const fn try_new(x: i32, y: i32) -> Option<Self> {
-        if x > 0 && y > 0 && x <= GRID_CELL_COUNT && y <= GRID_CELL_COUNT {
-            Some(Self { x, y })
-        } else {
-            None
-        }
-    }
+// impl GridPosition {
+//     // TODO: this seems wrong, it goes from 1->WORLD_SIZE however the is_in_bounds checks returns true for 0->WORLD_SIZE - 1
+//     pub const fn try_new(x: i32, y: i32) -> Option<Self> {
+//         if x > 0 && y > 0 && x <= GRID_CELL_COUNT && y <= GRID_CELL_COUNT {
+//             Some(Self { x, y })
+//         } else {
+//             None
+//         }
+//     }
 
-    pub const fn _min(self) -> bool {
-        self.x == 1 && self.y == 1
-    }
+//     pub const fn _min(self) -> bool {
+//         self.x == 1 && self.y == 1
+//     }
 
-    pub const fn _max(self) -> bool {
-        self.x == GRID_CELL_COUNT && self.y == GRID_CELL_COUNT
-    }
+//     pub const fn _max(self) -> bool {
+//         self.x == GRID_CELL_COUNT && self.y == GRID_CELL_COUNT
+//     }
 
-    pub const fn square_distance(self, other: GridPosition) -> i32 {
-        (other.x - self.x).pow(2) + (other.y - self.y).pow(2)
-    }
-}
+//     pub const fn square_distance(self, other: GridPosition) -> i32 {
+//         (other.x - self.x).pow(2) + (other.y - self.y).pow(2)
+//     }
+// }
 
 #[derive(Component)]
 pub struct Path;

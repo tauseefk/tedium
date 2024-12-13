@@ -12,6 +12,11 @@ pub fn pathfinding(
         return;
     }
 
+    let world_dimensions = WorldDimensions {
+        rows: GRID_CELL_COUNT,
+        cols: GRID_CELL_COUNT,
+        cell_width: GRID_BLOCK_SIZE,
+    };
     let player = player.single();
     let chest = poi_with_transform.iter().find(|(chest, _)| chest.active);
 
@@ -22,12 +27,12 @@ pub fn pathfinding(
 
     let (_, c_transform) = chest.unwrap();
 
-    let start_grid_pos = translation_to_grid_pos(player.translation).unwrap();
-    let end_grid_pos = translation_to_grid_pos(c_transform.translation).unwrap();
+    let start_grid_pos = translation_to_grid_pos(player.translation, &world_dimensions).unwrap();
+    let end_grid_pos = translation_to_grid_pos(c_transform.translation, &world_dimensions).unwrap();
 
     let wall_blocks = wall_blocks
         .iter()
-        .map(|block| translation_to_grid_pos(block.translation).unwrap())
+        .map(|block| translation_to_grid_pos(block.translation, &world_dimensions).unwrap())
         .collect::<Vec<_>>();
 
     let result = bfs(
@@ -36,7 +41,7 @@ pub fn pathfinding(
             let &GridPosition { x, y } = p;
             vec![(x, y - 1), (x, y + 1), (x - 1, y), (x + 1, y)]
                 .into_iter()
-                .filter_map(|(x, y)| GridPosition::try_new(x, y))
+                .filter_map(|(x, y)| GridPosition::try_new(x, y, &world_dimensions))
                 .filter(|grid_pos| wall_blocks.contains(grid_pos).not())
         },
         |p| *p == end_grid_pos,
@@ -56,7 +61,7 @@ pub fn pathfinding(
                         ..Default::default()
                     },
                     transform: Transform {
-                        translation: grid_to_translation(grid_pos),
+                        translation: grid_position_to_translation(grid_pos, &world_dimensions),
                         ..Default::default()
                     },
                     ..Default::default()
@@ -78,11 +83,18 @@ pub fn path_traversal(
     }
     let mut player = player_query.single_mut();
     let mut player_animation_state = animation_state.single_mut();
+    let world_dimensions = WorldDimensions {
+        rows: GRID_CELL_COUNT,
+        cols: GRID_CELL_COUNT,
+        cell_width: GRID_BLOCK_SIZE,
+    };
 
     match path_query.iter().nth(1) {
         Some(path_block) => {
-            let current_grid_position = translation_to_grid_pos(player.translation).unwrap();
-            let next_grid_position = translation_to_grid_pos(path_block.translation).unwrap();
+            let current_grid_position =
+                translation_to_grid_pos(player.translation, &world_dimensions).unwrap();
+            let next_grid_position =
+                translation_to_grid_pos(path_block.translation, &world_dimensions).unwrap();
 
             let next_animation_variant = match (
                 next_grid_position.x - current_grid_position.x,

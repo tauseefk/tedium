@@ -1,7 +1,6 @@
 mod components;
 mod debug;
 mod events;
-mod field_of_view;
 mod player_animation;
 mod systems;
 mod utils;
@@ -12,14 +11,14 @@ mod prelude {
     pub use animation_transition::{AnimationLoop, AnimationTransition, AnimationTransitionMacro};
     pub use bevy::asset::AssetMetaCheck;
     pub use bevy::prelude::*;
-    pub use bevy::utils::{HashMap, HashSet};
+    pub use bevy::utils::HashSet;
     pub use bevy_ecs_ldtk::prelude::*;
+    pub use lumos::prelude::*;
     pub use pathfinding::prelude::*;
 
     pub use crate::components::*;
     pub use crate::debug::*;
     pub use crate::events::*;
-    pub use crate::field_of_view::*;
     pub use crate::player_animation::*;
     pub use crate::systems::{
         animate_player::*, camera_follow::*, cycle_poi::*, keyboard_events::*, mouse_click::*,
@@ -108,7 +107,17 @@ fn main() {
             0.2,
             TimerMode::Repeating,
         )))
-        .insert_resource(field_of_view::Visibility::new(false, MAX_VISIBLE_DISTANCE))
+        .insert_resource(VisContainer {
+            visibility: lumos::Visibility::new(
+                WorldDimensions {
+                    rows: GRID_CELL_COUNT,
+                    cols: GRID_CELL_COUNT,
+                    cell_width: GRID_BLOCK_SIZE,
+                },
+                false,
+                MAX_VISIBLE_DISTANCE,
+            ),
+        })
         .add_event::<UpdateDebugConfigEvent>()
         .add_event::<ToggleWallBlockEvent>()
         .add_event::<PlayerMoveEvent>()
