@@ -173,17 +173,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "animation_transition"
-version = "0.1.0"
-source = "git+https://github.com/tauseefk/animation_transition#fa60c8d7906c64553b466b6c7d7609fdc7aa1f03"
+name = "animatron"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3573530dd8d44c8bf5561d0ea37c1e61855aa49a4874bb7582b83fd80893800a"
 dependencies = [
- "animation_transition_derive",
+ "animatron_derive",
 ]
 
 [[package]]
-name = "animation_transition_derive"
-version = "0.1.1"
-source = "git+https://github.com/tauseefk/animation_transition#fa60c8d7906c64553b466b6c7d7609fdc7aa1f03"
+name = "animatron_derive"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bbc1d11c60091994c217a37ef4f8ea06fa4f7ee7556b7c9bec86c3d051ff54b3"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -3499,7 +3501,7 @@ dependencies = [
 name = "tedium"
 version = "0.1.0"
 dependencies = [
- "animation_transition",
+ "animatron",
  "bevy",
  "bevy_ecs_ldtk",
  "bevy_ecs_tilemap",
