@@ -32,16 +32,21 @@ pub fn pathfinding(
 
     let wall_blocks = wall_blocks
         .iter()
-        .map(|block| translation_to_grid_pos(block.translation, &world_dimensions).unwrap())
+        .filter_map(|block| translation_to_grid_pos(block.translation, &world_dimensions))
         .collect::<Vec<_>>();
 
     let result = bfs(
         &start_grid_pos,
         |p| {
-            let &GridPosition { x, y } = p;
+            let &IVec2 { x, y } = p;
             vec![(x, y - 1), (x, y + 1), (x - 1, y), (x + 1, y)]
                 .into_iter()
-                .filter_map(|(x, y)| GridPosition::try_new(x, y, &world_dimensions))
+                .filter_map(
+                    |(x, y)| match is_in_bounds(&IVec2::new(x, y), &world_dimensions) {
+                        true => Some(IVec2::new(x, y)),
+                        false => None,
+                    },
+                )
                 .filter(|grid_pos| wall_blocks.contains(grid_pos).not())
         },
         |p| *p == end_grid_pos,

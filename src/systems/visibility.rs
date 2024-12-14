@@ -54,7 +54,7 @@ pub fn visibility_calculation_system(
         vec![TileType::Transparent; (GRID_CELL_COUNT * GRID_CELL_COUNT) as usize];
     for x in 0..=GRID_CELL_COUNT {
         for y in 0..=GRID_CELL_COUNT {
-            let idx = grid_pos_to_idx(&GridPosition { x, y }, &world_dimensions);
+            let idx = grid_pos_to_idx(&IVec2 { x, y }, &world_dimensions);
             if let Some(idx) = idx {
                 if wall_position_hash_set.contains(&idx) {
                     tiles[idx] = TileType::Opaque;
@@ -78,9 +78,12 @@ pub fn visibility_calculation_system(
     let result = vis_container.visibility.compute_visible_tiles(&world);
 
     // GRID cells start at 1,1 and end at GRID_CELL_COUNT, GRID_CELL_COUNT
-    for x in 1..=GRID_CELL_COUNT {
-        for y in 1..=GRID_CELL_COUNT {
-            let grid_pos = GridPosition::try_new(x, y, &world_dimensions);
+    for x in 0..GRID_CELL_COUNT {
+        for y in 0..GRID_CELL_COUNT {
+            let grid_pos = match is_in_bounds(&IVec2::new(x, y), &world_dimensions) {
+                true => Some(IVec2::new(x, y)),
+                false => None,
+            };
             if let Some(grid_pos) = grid_pos {
                 if !result.contains_key(&grid_pos) {
                     let world_pos = grid_position_to_translation(grid_pos, &world.grid_dimensions);

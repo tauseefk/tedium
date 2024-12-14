@@ -13,22 +13,22 @@ pub fn player_move(
 
     for event in player_move_events.read() {
         let translation_delta: bevy::prelude::Vec3 = match event.direction {
-            PlayerMoveDirection::Up => bevy::prelude::Vec3 {
+            PlayerMoveDirection::Up => lumos::Vec3 {
                 x: 0.,
                 y: GRID_BLOCK_SIZE as f32,
                 z: 0.,
             },
-            PlayerMoveDirection::Down => bevy::prelude::Vec3 {
+            PlayerMoveDirection::Down => lumos::Vec3 {
                 x: 0.,
                 y: -1. * GRID_BLOCK_SIZE as f32,
                 z: 0.,
             },
-            PlayerMoveDirection::Left => bevy::prelude::Vec3 {
+            PlayerMoveDirection::Left => lumos::Vec3 {
                 x: -1. * GRID_BLOCK_SIZE as f32,
                 y: 0.,
                 z: 0.,
             },
-            PlayerMoveDirection::Right => bevy::prelude::Vec3 {
+            PlayerMoveDirection::Right => lumos::Vec3 {
                 x: GRID_BLOCK_SIZE as f32,
                 y: 0.,
                 z: 0.,
@@ -36,7 +36,7 @@ pub fn player_move(
         };
         let updated_position = player.translation + translation_delta;
         let updated_position = lumos::snap_to_grid(
-            lumos::Vec3::new(updated_position.x, updated_position.y, updated_position.z),
+            updated_position,
             &WorldDimensions {
                 rows: GRID_CELL_COUNT,
                 cols: GRID_CELL_COUNT,
@@ -44,11 +44,7 @@ pub fn player_move(
             },
         );
         if let Some(updated_position) = updated_position {
-            player.translation = bevy::prelude::Vec3::new(
-                updated_position.x,
-                updated_position.y,
-                updated_position.z,
-            );
+            player.translation = updated_position;
         }
     }
 }
