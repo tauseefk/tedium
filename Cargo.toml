@@ -8,7 +8,7 @@ edition = "2021"
 bevy = { version = "0.14" }
 bevy_ecs_ldtk = "0.10"
 pathfinding = "4.11.0"
-animation_transition = { git = "https://github.com/tauseefk/animation_transition", features = ["derive"] }
+animatron = { version = "0.2.2", features = ["derive"] }
 shadowcaster = "0.1.0"
 
 # bevy_ecs_ldtk is using bevy_ecs_tilemap

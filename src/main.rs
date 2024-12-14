@@ -8,7 +8,7 @@ mod utils;
 mod prelude {
     pub use std::ops::Not;
 
-    pub use animation_transition::{AnimationLoop, AnimationTransition, AnimationTransitionMacro};
+    pub use animatron::{AnimationLoop, AnimationTransition, AnimationTransitionMacro};
     pub use bevy::asset::AssetMetaCheck;
     pub use bevy::prelude::*;
     pub use bevy::utils::HashSet;
