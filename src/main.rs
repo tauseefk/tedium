@@ -13,8 +13,8 @@ mod prelude {
     pub use bevy::prelude::*;
     pub use bevy::utils::HashSet;
     pub use bevy_ecs_ldtk::prelude::*;
-    pub use lumos::prelude::*;
     pub use pathfinding::prelude::*;
+    pub use shadowcaster::prelude::*;
 
     pub use crate::components::*;
     pub use crate::debug::*;
@@ -108,7 +108,7 @@ fn main() {
             TimerMode::Repeating,
         )))
         .insert_resource(VisContainer {
-            visibility: lumos::Visibility::new(
+            visibility: shadowcaster::Visibility::new(
                 WorldDimensions {
                     rows: GRID_CELL_COUNT,
                     cols: GRID_CELL_COUNT,

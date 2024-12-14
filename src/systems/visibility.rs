@@ -2,7 +2,7 @@ use crate::prelude::*;
 
 #[derive(Resource)]
 pub struct VisContainer {
-    pub visibility: lumos::Visibility,
+    pub visibility: shadowcaster::Visibility,
 }
 
 pub fn visibility_calculation_system(

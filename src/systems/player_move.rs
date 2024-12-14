@@ -13,29 +13,29 @@ pub fn player_move(
 
     for event in player_move_events.read() {
         let translation_delta: bevy::prelude::Vec3 = match event.direction {
-            PlayerMoveDirection::Up => lumos::Vec3 {
+            PlayerMoveDirection::Up => shadowcaster::Vec3 {
                 x: 0.,
                 y: GRID_BLOCK_SIZE as f32,
                 z: 0.,
             },
-            PlayerMoveDirection::Down => lumos::Vec3 {
+            PlayerMoveDirection::Down => shadowcaster::Vec3 {
                 x: 0.,
                 y: -1. * GRID_BLOCK_SIZE as f32,
                 z: 0.,
             },
-            PlayerMoveDirection::Left => lumos::Vec3 {
+            PlayerMoveDirection::Left => shadowcaster::Vec3 {
                 x: -1. * GRID_BLOCK_SIZE as f32,
                 y: 0.,
                 z: 0.,
             },
-            PlayerMoveDirection::Right => lumos::Vec3 {
+            PlayerMoveDirection::Right => shadowcaster::Vec3 {
                 x: GRID_BLOCK_SIZE as f32,
                 y: 0.,
                 z: 0.,
             },
         };
         let updated_position = player.translation + translation_delta;
-        let updated_position = lumos::snap_to_grid(
+        let updated_position = shadowcaster::snap_to_grid(
             updated_position,
             &WorldDimensions {
                 rows: GRID_CELL_COUNT,
