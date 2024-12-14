@@ -142,8 +142,8 @@ fn main() {
                 bevy::window::close_when_requested,
             ),
         )
-        .add_systems(FixedUpdate, animate_player);
-    // .add_systems(FixedUpdate, (path_traversal, animate_player));
+        // .add_systems(FixedUpdate, animate_player);
+        .add_systems(FixedUpdate, (path_traversal, animate_player));
 
     app.run();
 }
